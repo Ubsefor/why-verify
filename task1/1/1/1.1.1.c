@@ -1,15 +1,20 @@
 #include <limits.h>
 #include <stdio.h>
 
+#define IN
+#define OUT
+
 // "program" that is to be verified. z1 -- output arg in that case
-int* fn(int x1, int x2, int x3, int* z1){
-  *z1 = x1 + x2 - x3;
-  return z1;
+void fn(IN int x1, IN int x2, IN int x3, OUT int* z1){
+  int y1 = x1 - x3;
+  y1 = y1 + x2;
+  *z1 = y1;
 }
 
 // helper/runner for fn()
-int main(int argc, char* argv[]){
-  int res = 0;
-  res = fn(1, 2, 3, res);
+int main(IN int argc, IN char* argv[]){
+  int res;
+  fn(4, 2, 3, &res);
   printf("Res: %d\n", res);
+  return 0;
 }
