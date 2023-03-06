@@ -12,7 +12,7 @@
 #endif
 
 // "program" that is to be verified. z1 -- output arg in that case
-void fn(IN int x1, IN int x2, IN int x3, OUT int* z1){
+void fn(IN int64_t x1, IN int64_t x2, IN int64_t x3, OUT int64_t* z1){
   int64_t y1 = 0;
 
   if (
@@ -133,8 +133,8 @@ void fn(IN int x1, IN int x2, IN int x3, OUT int* z1){
 
 // helper/runner for fn()
 int main(IN int argc, IN char* argv[]){
-  int res;
+  int64_t res;
   fn(4, 2, 3, &res);
-  DEBUG_PRINTF("Res: %d\n", res);
+  DEBUG_PRINTF("Res: %lld\n", res);
   return 0;
 }
