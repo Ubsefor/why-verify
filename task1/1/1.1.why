@@ -1,0 +1,138 @@
+theory Task1_1
+
+  use import int.Int
+
+  (* Declare constants *)
+
+  constant int_min: int = -0x80000000 (* -2^31    *)
+  constant int_max: int =  0x7fffffff (* 2^31 - 1 *)
+
+  predicate over (x1 : int) =
+    ((int_max <= x1) || (x1 <= int_min))
+
+  predicate over_sum (x1 : int) (x2 : int) =
+    ((x1 > 0) &&
+      (x2 > 0) &&
+        (int_max - x2 < x1)) ||
+    ((x1 < 0) &&
+      (x2 < 0) &&
+        (int_min - x2 > x1))
+
+  predicate x_domain_overflow (x1 : int) (x2 : int) (x3 : int) =
+    not (over x1 && over x2 && over x3)
+
+  function p1(x1 : int) (x2 : int) (x3 : int) : int =
+    let y1 = x1 - x3 in
+    let y1 = y1 + x2 in
+    let z1 = y1 in
+    z1
+
+  function p2(x1 : int) (x2 : int) (x3 : int) : int =
+    let y1 = x1 - x3 in
+    let y1 = y1 + x2 in
+    y1
+
+  (* partial: phi(x) & (M(x) != omega) -> psi(x, M(x)) *)
+
+  goal p1t1_part: forall x1 : int, x2 : int, x3 : int.
+    (* T1 *)
+    x_domain_overflow x1 x2 x3 &&
+      not over (x1 - x3) &&
+        not over (x1 - x3 + x2) &&
+    (* endianess *)
+    not over (x1 - x3 + x2) &&
+      not over (x1 - x3) &&
+        x_domain_overflow x1 x2 x3
+    ->
+    not over (p1 x1 x2 x3) &&
+      (p1 x1 x2 x3 = x1 - x3 + x2)
+
+  goal p1t2_part: forall x1 : int, x2 : int, x3 : int.
+    (* T2 *)
+    x_domain_overflow x1 x2 x3 &&
+      not over (x1 + x2 - x3) &&
+    (* endianess *)
+    not over (x1 - x3 + x2) &&
+      not over (x1 - x3) &&
+        x_domain_overflow x1 x2 x3
+    ->
+    not over (p1 x1 x2 x3) &&
+      (p1 x1 x2 x3 = x1 - x3 + x2)
+
+
+  goal p2t1_part: forall x1 : int, x2 : int, x3 : int.
+    (* T1 *)
+    x_domain_overflow x1 x2 x3 &&
+      not over (x1 - x3) &&
+        not over (x1 - x3 + x2) &&
+    (* endianess *)
+    x_domain_overflow x1 x2 x3 &&
+      (not over_sum x1 x2 || not over_sum x1 (-x3) || not over_sum x2 (-x3))
+    ->
+    not over (x1 - x3 + x2) &&
+      (p2 x1 x2 x3 = x1 - x3 + x2)
+
+
+  goal p2t2_part: forall x1 : int, x2 : int, x3 : int.
+    (* T2 *)
+    x_domain_overflow x1 x2 x3 &&
+        not over (x1 - x3 + x2) &&
+    (* endianess *)
+    x_domain_overflow x1 x2 x3 &&
+      (not over_sum x1 x2 || not over_sum x1 (-x3) || not over_sum x2 (-x3))
+    ->
+    not over (x1 + x2 - x3) &&
+      (p2 x1 x2 x3 = x1 - x3 + x2)
+
+  (* full: phi(x) -> (M(x) != omega) & psi(x, M(x)) *)
+
+  goal p1t1_full: forall x1 : int, x2 : int, x3 : int.
+    (* T1 *)
+    x_domain_overflow x1 x2 x3 &&
+      not over (x1 - x3) &&
+        not over (x1 - x3 + x2)
+      ->
+        (* endianess *)
+    not over (x1 - x3 + x2) &&
+      not over (x1 - x3) &&
+        x_domain_overflow x1 x2 x3 &&
+
+    not over (p1 x1 x2 x3) &&
+      (p1 x1 x2 x3 = x1 - x3 + x2)
+
+  goal p1t2_full: forall x1 : int, x2 : int, x3 : int.
+    (* T2 *)
+    x_domain_overflow x1 x2 x3 &&
+      not over (x1 + x2 - x3)
+    ->
+    (* endianess *)
+    not over (x1 - x3 + x2) &&
+      not over (x1 - x3) &&
+        x_domain_overflow x1 x2 x3 &&
+    not over (p1 x1 x2 x3) &&
+      (p1 x1 x2 x3 = x1 - x3 + x2)
+
+  goal p2t1_full: forall x1 : int, x2 : int, x3 : int.
+    (* T1 *)
+    x_domain_overflow x1 x2 x3 &&
+      not over (x1 - x3) &&
+        not over (x1 - x3 + x2)
+    ->
+    (* endianess *)
+    x_domain_overflow x1 x2 x3 &&
+      (not over_sum x1 x2 || not over_sum x1 (-x3) || not over_sum x2 (-x3)) &&
+    not over (x1 - x3 + x2) &&
+      (p2 x1 x2 x3 = x1 - x3 + x2)
+
+  goal p2t2_full: forall x1 : int, x2 : int, x3 : int.
+    (* T2 *)
+    x_domain_overflow x1 x2 x3 &&
+        not over (x1 - x3 + x2)
+    ->
+    (* endianess *)
+    x_domain_overflow x1 x2 x3 &&
+      (not over_sum x1 x2 || not over_sum x1 (-x3) || not over_sum x2 (-x3)) &&
+    not over (x1 + x2 - x3) &&
+      (p2 x1 x2 x3 = x1 - x3 + x2)
+
+end

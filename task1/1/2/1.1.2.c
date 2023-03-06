@@ -16,9 +16,9 @@ void fn(IN int64_t x1, IN int64_t x2, IN int64_t x3, OUT int64_t* z1){
   int64_t y1 = 0;
 
   if (
-    (INT_MAX <= x1 && x1 >= INT_MIN) &&
-    (INT_MAX <= x2 && x2 >= INT_MIN) &&
-    (INT_MAX <= x3 && x3 >= INT_MIN)
+    (INT_MAX <= x1 || x1 <= INT_MIN) &&
+    (INT_MAX <= x2 || x2 <= INT_MIN) &&
+    (INT_MAX <= x3 || x3 <= INT_MIN)
   ) {
     while(1);
   }
