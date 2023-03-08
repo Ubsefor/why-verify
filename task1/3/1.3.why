@@ -1,5 +1,71 @@
 theory Task1_3
 
+  use import int.Int
 
+  predicate phi (x : int) =
+    (x > 1)
 
-end.
+  predicate in_omega (x : int) =
+    (x >= 0)
+
+  predicate pa (x : int) (y1 : int) (y2 : int) (y3 : int) =
+    (y1 = y2 * x) &&
+      (((y3 = x) &&
+          (y2 <= x))
+          ||
+        ((y3 = x * x) &&
+          (x <= y2) &&
+            (y2 <= x * x)))
+
+  function ua (x: int) (y1 : int) (y2 : int) (y3 : int) : int =
+    (2 * x * x - y2 - y3)
+
+  goal sa_path : forall x : int.
+    ((phi x) -> (pa x x 1 x))
+
+  goal sa_path_exst : forall x : int.
+    ((phi x) -> (in_omega (ua x x 1 x)))
+
+  goal ata_path : forall x : int, y1 : int, y2 : int, y3 : int.
+    ((x > 1) &&
+      (pa x y1 y2 y3) &&
+        (y2 < y3))
+      ->
+    (pa x (y1 + x) (y2 + 1) y3)
+
+  goal ata_path_exst : forall x : int, y1 : int, y2 : int, y3 : int.
+    (((phi x) &&
+      (pa x y1 y2 y3))
+    ->
+    (in_omega (ua x y1 y2 y3)))
+
+  goal ata_path_ends : forall x : int, y1 : int, y2 : int, y3 : int.
+    ((x > 1) &&
+      (pa x y1 y2 y3) &&
+        (y2 < y3))
+    ->
+    ((ua x (y1 + x) (y2 + 1) y3) < (ua x y1 y2 y3))
+
+  goal afta_path : forall x : int, y1 : int, y2 : int, y3 : int.
+    ((x > 1) &&
+      (pa x y1 y2 y3) &&
+        (y2 >= y3) &&
+          (y3 = x))
+    ->
+    (pa x y1 y2 y1)
+
+  goal afta_path_exst : forall x : int, y1 : int, y2 : int, y3 : int.
+    ((x > 1) &&
+      (pa x y1 y2 y3))
+    ->
+    ((ua x y1 y2 y3) >= 0)
+
+  goal afta_path_ends : forall x : int, y1 : int, y2 : int, y3 : int.
+    ((x > 1) &&
+      (pa x y1 y2 y3) &&
+        (y2 >= y3) &&
+          (y3 = x))
+    ->
+    ((ua x y1 y2 y1) < (ua x y1 y2 y3))
+
+end

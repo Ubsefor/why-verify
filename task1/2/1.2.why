@@ -1,5 +1,29 @@
 theory Task1_2
 
+use import int.Int
 
+predicate pa (x : int) (y1 : int) (y2 : int) (y3 : int) =
+  ((x >= y1*y1*y1) &&
+    (y2 = ((y1 + 1) * (y1 + 1) * (y1 + 1) - y3)) &&
+      (y3 = ((y1 + 1)*(y1 + 1)*(y1 + 1) - (y1*y1*y1)))
+  )
 
-end.
+goal sa_path : forall x : int.
+  (x >= 0) -> (pa x 0 0 1)
+
+goal aa_path : forall x : int, y1 : int, y2 : int, y3 : int.
+  (x >= 0) &&
+    pa x y1 y2 y3 &&
+      (y2 + y3 <= x)
+  ->
+  (pa x (y1 + 1) (y2 + y3) (y3 + 6 * y1 + 6))
+
+goal ah_path : forall x : int, y1 : int, y2 : int, y3 : int.
+  (x >= 0) &&
+    pa x y1 y2 y3 &&
+      ((y2 + y3) > x)
+  ->
+  ((y1 * y1 * y1) <= x) &&
+    (x < (y1 + 1) * (y1 + 1) * (y1 + 1))
+
+end

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="4">
+<prover id="0" name="CVC4" version="1.7" timelimit="5" steplimit="0" memlimit="1000"/>
+<file name="../1.3.why" expanded="true">
+<theory name="Task1_3" sum="79b56c033f62a0201c3946f4da9472e7" expanded="true">
+ <goal name="sa_path" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.02" steps="470"/></proof>
+ </goal>
+ <goal name="sa_path_exst" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.02" steps="2680"/></proof>
+ </goal>
+ <goal name="ata_path" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.02" steps="1051"/></proof>
+ </goal>
+ <goal name="ata_path_exst" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.04" steps="3520"/></proof>
+ </goal>
+ <goal name="ata_path_ends" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.02" steps="424"/></proof>
+ </goal>
+ <goal name="afta_path" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.04" steps="5821"/></proof>
+ </goal>
+ <goal name="afta_path_exst" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.04" steps="3520"/></proof>
+ </goal>
+ <goal name="afta_path_ends" expl="" expanded="true">
+ <proof prover="0"><result status="valid" time="0.03" steps="3779"/></proof>
+ </goal>
+</theory>
+</file>
+</why3session>
