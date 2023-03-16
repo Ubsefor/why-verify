@@ -1,0 +1,9 @@
+Нужно написать теорию, а в ней цель
+
+P, sqrt, \forall...
+\forall t : t > 0 => t = 1
+
+\exists :
+После сколемизации получается:
+	\exists x int { x > 0, \forall t : t > 0 => x*t = x}
+
