@@ -5,5 +5,8 @@ P, sqrt, \forall...
 
 \exists :
 После сколемизации получается:
-	\exists x int { x > 0, \forall t : t > 0 => x*t = x}
+	\exists x int { x > 0, \forall t : t > 0 => x*t = x} -- вылезает внешняя переменная
+=> надо навесить отрицание поверх всего этого дела:
+
+	\neg ( \exists x int { x > 0, \forall t : t > 0 => x*t = x} )
 
