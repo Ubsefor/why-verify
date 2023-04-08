@@ -1,0 +1,197 @@
+module Sets
+
+  use import int.Int
+  use import ref.Ref
+
+  type set 'a
+
+  (* inspired by std libs: Set, Fset *)
+  constant empty : set 'a
+
+  predicate mem (self : set 'a) (item : 'a)
+
+  predicate is_empty (s : set 'a)
+
+  predicate subset (set1 : set 'a) (set2 : set 'a)
+
+  function add (self : set 'a) (item : 'a) : set 'a
+
+  function rem (self : set 'a) (item : 'a) : set 'a
+
+  function len (self : set 'a) : int
+
+  function union (set1 :set 'a) (set2 : set 'a) : set 'a
+
+  function min_elem (self : set int) : int
+
+  axiom union_def:
+    forall set1 set2: set 'a, x: 'a.
+      mem (union set1 set2) x <-> mem set1 x || mem set2 x
+
+  axiom subset_p:
+    forall set1 set2 : set 'a, x : 'a.
+      subset set1 set2 <->
+        mem set1 x -> mem set2 x
+
+  axiom len_subset:
+    forall set1 set2 : set 'a.
+      subset set1 set2 -> len set1 <= len set2
+
+  axiom is_empty_p:
+    forall s : set 'a, e : 'a.
+      not (mem s e)
+
+  axiom len_min:
+    forall s : set 'a.
+      len s >= 0
+
+  axiom len_empty:
+    forall s: set 'a.
+      len s = 0 <-> is_empty s
+
+  axiom len_add:
+    forall s : set 'a, e : 'a.
+      not (mem s e) -> len (add s e) = (len s) + 1
+
+  axiom len_remove:
+    forall s : set 'a, e : 'a.
+      mem s e -> len s = 1 + len (rem s e)
+
+  axiom empty_contains:
+    forall s : set 'a, item : 'a.
+      (s = empty) ->
+        (mem s item) <-> false
+
+  axiom add_contains:
+    forall s : set 'a, item : 'a, item2 : 'a.
+      (((mem (add s item) item) = true) &&
+        ((item <> item2) -> ((mem (add s item) item2) = (mem s item2))))
+
+  axiom rem_contains:
+    forall s : set 'a, item : 'a, item2 : 'a.
+      ((mem (rem s item) item) = false) &&
+        ((item <> item2) -> ((mem (rem s item) item2) = (mem s item2)))
+
+  axiom min_elem_def1:
+    forall s: set int.
+      not (is_empty s) -> mem s (min_elem s)
+
+  axiom min_elem_def2:
+    forall s: set int, e: int.
+      mem s e -> min_elem s <= e
+
+  val add (self : set 'a) (item : 'a) : set 'a
+    ensures {(mem result item) = true}
+
+  val rem (self : set 'a) (item : 'a) : set 'a
+    ensures {(mem result item) = false}
+
+  val is_empty (self : set 'a) : bool
+    ensures {result = is_empty self}
+
+  val len (self : set 'a) : int
+    ensures {result = len self}
+
+  val subset (set1 : set 'a) (set2 : set 'a) : bool
+    ensures {result = subset set1 set2}
+
+  val union (set1 : set 'a) (set2 : set 'a) : set 'a
+    ensures {result = union set1 set2}
+
+  val min_elem (self : set int) : int
+    ensures {result = min_elem self}
+
+  let interval (start : int) (_end : int) : set int
+    requires {start <= _end}
+    ensures {forall e : int. mem result e <-> start <= e < _end}
+  =
+    let res = ref empty in
+    let i = ref start in
+    while !i < _end do
+      invariant {forall e : int. ((mem !res e <-> start <= e <= !i) || (is_empty !res))}
+      variant {(_end - !i)}
+      res := add !res !i;
+      i := !i + 1;
+    done;
+    !res
+
+  predicate divides (d:int) (n:int) = exists q:int. n = q * d
+
+  lemma divides_refl: forall n:int. divides n n
+  lemma divides_1_n : forall n:int. divides 1 n
+  lemma divides_0   : forall n:int. divides n 0
+
+  lemma divides_left : forall a b c: int. divides a b -> divides (c*a) (c*b)
+  lemma divides_right: forall a b c: int. divides a b -> divides (a*c) (b*c)
+
+  lemma divides_plusr:
+    forall a b c: int. divides a b -> divides a c -> divides a (b + c)
+
+  lemma divides_multl:
+    forall a b c: int. divides a b -> divides a (c * b)
+  lemma divides_multr:
+    forall a b c: int. divides a b -> divides a (b * c)
+
+  lemma divides_trans:
+    forall a b c: int. divides a b -> divides b c -> divides a c
+
+  predicate prime (p: int) =
+    2 <= p /\ forall n: int. 1 < n < p -> not (divides n p)
+
+  lemma not_prime_1: not (prime 1)
+  lemma prime_2    : prime 2
+  lemma prime_3    : prime 3
+
+  lemma prime_divisors:
+    forall p: int. prime p ->
+    forall d: int. divides d p -> d = 1 \/ d = -1 \/ d = p \/ d = -p
+
+  lemma small_divisors:
+    forall p: int. 2 <= p ->
+    (forall d: int. 2 <= d -> prime d -> 1 < d*d <= p -> not (divides d p)) ->
+    prime p
+
+end
+
+module Errata
+
+  use import Sets
+  use import int.Int
+  use import ref.Ref
+
+  function sieve (self : set int) (n : int) : set int
+
+  axiom sieve_def:
+    forall s : set int, e : int, n : int.
+      mem (sieve s n) e <-> (not (divides n e) && mem s e)
+
+  lemma sieve_len:
+    forall s : set int, n : int.
+      len (sieve s n) <= len s
+
+  val sieve (self : set int) (n : int) : set int
+    ensures {result = sieve self n}
+
+  (* Source: https://www.ru.nl/publish/pages/769526/marc_schoolderman.pdf *)
+  let errata (n: int): set int
+    requires {n >= 2}
+    ensures {forall m: int. prime m && m <= n <-> mem result m}
+    ensures {forall m: int. not (prime m) && m <= n <-> not (mem result m)}
+  =
+    let nums = ref (interval 2 n) in
+    let primes = ref empty in
+    while not (is_empty !nums) do
+      invariant {forall m k: int. mem !nums m && 2 <= k && divides k m -> mem !nums k}
+      invariant {forall m: int. prime m && m <= n -> mem (union !nums !primes) m}
+      invariant {forall m: int. mem !primes m -> prime m && m <= n}
+      invariant {forall m: int. mem !nums m -> 2 <= m <= n}
+      variant {len !nums}
+
+      let p = min_elem !nums in
+      assert {subset (add (sieve !nums p) p) !nums};
+      primes := add !primes p;
+      nums := sieve !nums p;
+    done;
+    !primes
+
+end
