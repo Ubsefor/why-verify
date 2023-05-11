@@ -155,7 +155,8 @@ module Task31
       (forall k : int. 0 <= k < ((select g gmem).vsize) -> (valid (shift (select g gmem).vertices k) v_alloc)) &&
       (forall k : int. 0 <= k < ((select g gmem).esize) -> (valid (shift (select g gmem).edges k) e_alloc)) &&
       (edges_valid g ((select g gmem).ecnt) gmem vmem emem) &&
-      (forall k : int. ((select g gmem).ecnt) <= k < ((select g gmem).esize) -> ((select (shift (select g gmem).edges k) emem).e_is = 0))
+      (forall k : int. ((select g gmem).ecnt) <= k < ((select g gmem).esize) ->
+        ((select (shift (select g gmem).edges k) emem).e_is = 0))
 
 
 (* predicate full(Graph *g) = range_is(g, 0, g->esize);
@@ -236,10 +237,10 @@ predicate count_one_p{L}(Graph *g, integer f, integer t, integer m) =
     requires { (valid g g_alloc) && (graph_valid g gmem vmem emem v_alloc e_alloc) }
     ensures { (count g f t (select g gmem).ecnt m gmem emem) = 0 }
   = if m > (select g gmem).ecnt then (
-    assert {(count g f t (m - 1) m gmem emem) = 0};
-    assert {(count g f t (select g gmem).ecnt m gmem emem) =
-      (count g f t (select g gmem).ecnt (m - 1) gmem emem) + (count g f t (m - 1) m gmem emem)};
-    ecnt_empty_l2 g f t (m - 1) gmem vmem emem g_alloc v_alloc e_alloc
+      assert {(count g f t (m - 1) m gmem emem) = 0};
+      assert {(count g f t (select g gmem).ecnt m gmem emem) =
+        (count g f t (select g gmem).ecnt (m - 1) gmem emem) + (count g f t (m - 1) m gmem emem)};
+      ecnt_empty_l2 g f t (m - 1) gmem vmem emem g_alloc v_alloc e_alloc
     )
     else ()
 
@@ -294,137 +295,158 @@ let count (g : pointer graph) (f : int) (t : int) (gmem : memory graph) (g_alloc
 
   let add_edge (g : pointer graph) (f : int) (t : int) (gmem : memory graph) (g_alloc : alloc_table graph)
         (emem : memory edge) (e_alloc : alloc_table edge)
-        (vmem : memory vertex) (v_alloc : alloc_table vertex) (*: (r_emem : memory edge, r_gmem : memory graph) *)
+        (vmem : memory vertex) (v_alloc : alloc_table vertex)
+        (* valid mem *)
         requires {(valid g g_alloc) && (graph_valid g gmem vmem emem v_alloc e_alloc)}
+        (* has vertices *)
         requires {is_vertex g f gmem}
         requires {is_vertex g t gmem}
+        (* vertices exist *)
         requires {(select (shift (select g gmem).vertices f) vmem).v_is <> 0}
         requires {(select (shift (select g gmem).vertices t) vmem).v_is <> 0}
+        (* has mem for adding edge *)
         requires {not full g gmem emem}
+        (* resulting mem valid *)
         ensures {let (r_emem, r_gmem) = result in graph_valid g r_gmem vmem r_emem v_alloc e_alloc}
+        (*  *)
         ensures {let (r_emem, r_gmem) = result in all_count g f t r_gmem r_emem = (all_count g f t gmem emem + 1)}
         ensures {let (r_emem, r_gmem) = result in forall f2 : int, t2 : int. (f2 <> f || t2 <> t) -> (all_count g f2 t2 r_gmem r_emem) = (all_count g f2 t2 gmem emem)}
         =
         let new_emem = ref emem in
         let new_gmem = ref gmem in
         if (acc g gmem g_alloc).ecnt < (acc g gmem g_alloc).esize then (
-            new_emem := upd (shft (acc g !new_gmem g_alloc).edges (acc g !new_gmem g_alloc).ecnt)
-                !new_emem e_alloc {from = f; tto = t; e_is = 1};
-            new_gmem := upd g !new_gmem g_alloc
-                {   vertices = (acc g !new_gmem g_alloc).vertices;
-                    vsize = (acc g !new_gmem g_alloc).vsize;
-                    edges = (acc g !new_gmem g_alloc).edges;
-                    ecnt = (acc g !new_gmem g_alloc).ecnt + 1;
-                    esize = (acc g !new_gmem g_alloc).esize
-                };
+          new_emem := upd (shft (acc g !new_gmem g_alloc).edges (acc g !new_gmem g_alloc).ecnt)
+            !new_emem e_alloc {from = f; tto = t; e_is = 1};
+          new_gmem := upd g !new_gmem g_alloc {
+            vertices = (acc g !new_gmem g_alloc).vertices;
+            vsize = (acc g !new_gmem g_alloc).vsize;
+            edges = (acc g !new_gmem g_alloc).edges;
+            ecnt = (acc g !new_gmem g_alloc).ecnt + 1;
+            esize = (acc g !new_gmem g_alloc).esize
+          };
 
-            let k2 = ref 0 in
-            while !k2 < (acc g !new_gmem g_alloc).esize do
-                (* loop counter variant *)
-                variant {(select g !new_gmem).esize - !k2}
-                (* for loop counter *)
-                invariant {!k2 >= 0}
-                invariant {!k2 <= (select g !new_gmem).esize}
-                (* for all other edges count stays the same *)
-                invariant { forall j : int. 0 <= j <= !k2 /\ j <= (select g !new_gmem).esize
-                    -> forall f2 : int, t2 : int. f2 <> f \/ t2 <> t
-                        -> (count g f2 t2 0 j !new_gmem !new_emem) = (count g f2 t2 0 j gmem emem)}
+          (* for k = 0 to (acc g !new_gmem g_alloc).esize - 1 do
+            invariant { forall j : int. 0 <= j <= k && j <= (select g !new_gmem).esize - 1
+              forall f2 : int, t2 : int. f2 <> f || t2 <> t ->
+                (count g f2 t2 0 j !new_gmem !new_emem) = (count g f2 t2 0 j gmem emem)}()
 
-                k2 := !k2 + 1;
-            done;
+              For loop does not work here :/
+          done; *)
 
-            let k = ref 0 in
-            while !k < (acc g !new_gmem g_alloc).esize do
-                (* loop counter variant *)
-                variant {(select g !new_gmem).esize - !k}
-                (* for loop counter *)
-                invariant {!k >= 0}
-                invariant {!k <= (select g !new_gmem).esize}
-                (* memory stays the same, except for ecnt-1 *)
-                invariant { forall j : int. 0 <= j <= !k /\ j < (select g !new_gmem).esize ->
-                    j <> ((select g !new_gmem).ecnt - 1) ->
-                    (select (shift (select g !new_gmem).edges j) !new_emem) = (select (shift (select g gmem).edges j) emem)}
-                invariant { forall j : int. 0 <= j < !k && j <> ((select g !new_gmem).ecnt - 1)
-                    -> (count g f t j (j + 1) !new_gmem !new_emem) = (count g f t j (j + 1) gmem emem) }
-                invariant { (count g f t 0 !k !new_gmem !new_emem) =
-                    (count g f t 0 !k gmem emem) + (if !k < ((select g !new_gmem).ecnt - 1) + 1 then 0 else 1)}
+          let m = ref 0 in
+          while !m < (acc g !new_gmem g_alloc).esize do
+            (* loop counter variant *)
+            variant {(select g !new_gmem).esize - !m}
 
-                k := !k + 1;
-            done;
+            (* for loop counter *)
+            invariant {!m >= 0}
+            invariant {!m <= (select g !new_gmem).esize}
 
-            let k3 = ref 0 in
-            while !k3 < (acc g !new_gmem g_alloc).esize do
-                (* loop counter variant *)
-                variant {(select g !new_gmem).esize - !k3}
-                (* for loop counter *)
-                invariant {!k3 >= 0}
-                invariant {!k3 <= (select g !new_gmem).esize}
-                (* for all other edges count stays the same *)
-                invariant { forall j : int. 0 <= j <= !k3 /\ j < (select g !new_gmem).esize
-                    -> edge_valid g j !new_gmem vmem !new_emem }
+            (* for all other edges count stays the same *)
+            invariant { forall j : int. 0 <= j <= !m && j <= (select g !new_gmem).esize ->
+              forall f2 : int, t2 : int. f2 <> f || t2 <> t ->
+                (count g f2 t2 0 j !new_gmem !new_emem) = (count g f2 t2 0 j gmem emem)}
 
-                k3 := !k3 + 1;
-            done;
-            assert {count g f t ((select g !new_gmem).ecnt - 1) (select g !new_gmem).ecnt !new_gmem !new_emem = 1};
+            m := !m + 1;
+          done;
+
+          for k = 0 to ((acc g !new_gmem g_alloc).esize - 1) do
+            (* new mem = old mem *)
+            invariant { forall j : int. 0 <= j <= k && j < (select g !new_gmem).esize - 1 ->
+              j <> ((select g !new_gmem).ecnt - 1) ->
+                (select (shift (select g !new_gmem).edges j) !new_emem) = (select (shift (select g gmem).edges j) emem)}
+
+            invariant { forall j : int. 0 <= j < k && j <> ((select g !new_gmem).ecnt - 1) ->
+              (count g f t j (j + 1) !new_gmem !new_emem) = (count g f t j (j + 1) gmem emem) }
+
+            invariant { (count g f t 0 k !new_gmem !new_emem) =
+              (count g f t 0 k gmem emem) + (if k < ((select g !new_gmem).ecnt - 1) + 1 then 0 else 1)}()
+          done;
+
+          for k = 0 to (acc g !new_gmem g_alloc).esize - 1 do
+            invariant { forall j : int. 0 <= j <= k && j < (select g !new_gmem).esize - 1 ->
+              edge_valid g j !new_gmem vmem !new_emem }()
+          done;
+
+          assert {count g f t ((select g !new_gmem).ecnt - 1) (select g !new_gmem).ecnt !new_gmem !new_emem = 1};
         ) else (
-            let brk = ref 0 in
+            let stop = ref 0 in
             let i = ref 0 in
             assert{ exists k : int. 0 <= k <= (select g !new_gmem).ecnt - 1 && 0 = (select (shift (select g !new_gmem).edges k) !new_emem).e_is };
             while !i < (acc g !new_gmem g_alloc).ecnt do
-                variant {(select g !new_gmem).ecnt - !i}
-                invariant {!i >= 0}
-                invariant {!i <= (select g !new_gmem).ecnt}
+              variant {(select g !new_gmem).ecnt - !i}
+              invariant {!i >= 0}
+              invariant {!i <= (select g !new_gmem).ecnt}
 
-                invariant { !brk = 1 || (!brk = 0 && exists k : int. !i <= k <= (select g !new_gmem).ecnt - 1 && 0 = (select (shift (select g !new_gmem).edges k) !new_emem).e_is ) }
-                invariant { graph_valid g !new_gmem vmem !new_emem v_alloc e_alloc }
-                invariant { (all_count g f t !new_gmem !new_emem) = (all_count g f t gmem emem) + !brk }
-                invariant { forall f2:int, t2:int. f2 <> f \/ t2 <> t -> (all_count g f2 t2 !new_gmem !new_emem) = (all_count g f2 t2 gmem emem) }
+              invariant { !stop = 1 || (!stop = 0 && exists k : int. !i <= k <= (select g !new_gmem).ecnt - 1 && 0 = (select (shift (select g !new_gmem).edges k) !new_emem).e_is ) }
+              invariant { graph_valid g !new_gmem vmem !new_emem v_alloc e_alloc }
+              invariant { (all_count g f t !new_gmem !new_emem) = (all_count g f t gmem emem) + !stop }
+              invariant { forall f2:int, t2:int. f2 <> f || t2 <> t -> (all_count g f2 t2 !new_gmem !new_emem) = (all_count g f2 t2 gmem emem) }
 
-                'Pre:
-                if !brk = 0 && (acc (shft (acc g !new_gmem g_alloc).edges !i) !new_emem e_alloc).e_is = 0 then (
-                    new_emem := upd (shft (acc g !new_gmem g_alloc).edges !i)
-                        !new_emem e_alloc {from = f; tto = t; e_is = 1};
-                    brk := 1;
-                    let k1 = ref 0 in
-                    while !k1 < (acc g !new_gmem g_alloc).esize do
-                        variant {(select g !new_gmem).esize - !k1}
-                        (* for loop counter *)
-                        invariant {!k1 >= 0}
-                        invariant {!k1 <= (select g !new_gmem).esize}
+              'Pre:
+              if !stop = 0 && (acc (shft (acc g !new_gmem g_alloc).edges !i) !new_emem e_alloc).e_is = 0 then (
+                new_emem := upd (shft (acc g !new_gmem g_alloc).edges !i)
+                  !new_emem e_alloc {from = f; tto = t; e_is = 1};
+                stop := 1;
 
-                        invariant { forall j : int.
-                            0 <= j <= !k1 /\ j < (select g !new_gmem).esize -> j <> !i
-                                -> (select (shift (select g !new_gmem).edges j) !new_emem) =
-                                    (select (shift (select g !new_gmem).edges j) (at !new_emem 'Pre)) }
-                        invariant { forall j : int. 0 <= j <= !k1 /\ j <= (select g !new_gmem).esize
-                            -> forall f2 : int, t2 : int. f2 <> f \/ t2 <> t
-                                -> (count g f2 t2 0 j !new_gmem !new_emem) =
-                                    (count g f2 t2 0 j !new_gmem (at !new_emem 'Pre)) }
-                        invariant { forall j : int.
-                            0 <= j <= !k1 /\ j < (select g !new_gmem).esize -> j <> !i ->
-                              edge_valid g j !new_gmem vmem !new_emem}
-                        k1 := !k1 + 1;
-                    done;
-                    let k3 = ref 0 in
-                    while !k3 < (acc g !new_gmem g_alloc).esize do
-                        variant {(select g !new_gmem).esize - !k3}
-                        (* for loop counter *)
-                        invariant {!k3 >= 0}
-                        invariant {!k3 <= (select g !new_gmem).esize}
+                (* for k = 0 to (acc g !new_gmem g_alloc).esize - 1 do
+                  invariant { forall j : int.
+                    0 <= j <= k && j < (select g !new_gmem).esize - 1 -> j <> !i ->
+                      (select (shift (select g !new_gmem).edges j) !new_emem) =
+                        (select (shift (select g !new_gmem).edges j) (at !new_emem 'Pre)) }
 
-                        invariant { (count g f t 0 !k3 !new_gmem !new_emem) =
-                            (count g f t 0 !k3 !new_gmem (at !new_emem 'Pre)) + (if !k3 < !i + 1 then 0 else 1)}
+                  invariant { forall j : int. 0 <= j <= k && j <= (select g !new_gmem).esize - 1 ->
+                    forall f2 : int, t2 : int. f2 <> f || t2 <> t ->
+                      (count g f2 t2 0 j !new_gmem !new_emem) =
+                        (count g f2 t2 0 j !new_gmem (at !new_emem 'Pre)) }
 
-                        k3 := !k3 + 1;
-                    done;
-                    assert { edge_valid g !i !new_gmem vmem !new_emem};
-                    assert { forall k : int. 0 <= k < (select g !new_gmem).esize ->
-                        edge_valid g k !new_gmem vmem !new_emem };
-                    assert {(all_count g f t !new_gmem !new_emem) = (all_count g f t (at !new_gmem 'Pre) (at !new_emem 'Pre)) + 1};
-                );
-                i := !i + 1;
-            done;
-            assert{ !brk = 1 }
+                  invariant { forall j : int.
+                    0 <= j <= k && j < (select g !new_gmem).esize - 1 -> j <> !i ->
+                      edge_valid g j !new_gmem vmem !new_emem}()
+
+                  For Loop doesnt work here too :/
+                done; *)
+
+                let m2 = ref 0 in
+                while !m2 < (acc g !new_gmem g_alloc).esize do
+                  variant {(select g !new_gmem).esize - !m2}
+                  (* for loop counter *)
+                  invariant {!m2 >= 0}
+                  invariant {!m2 <= (select g !new_gmem).esize}
+                  (* mem stays the same for graph and edges *)
+                  invariant { forall j : int.
+                    0 <= j <= !m2 && j < (select g !new_gmem).esize -> j <> !i ->
+                      (select (shift (select g !new_gmem).edges j) !new_emem) =
+                        (select (shift (select g !new_gmem).edges j) (at !new_emem 'Pre)) }
+
+                  invariant { forall j : int. 0 <= j <= !m2 && j <= (select g !new_gmem).esize ->
+                    forall f2 : int, t2 : int. f2 <> f || t2 <> t ->
+                      (count g f2 t2 0 j !new_gmem !new_emem) =
+                        (count g f2 t2 0 j !new_gmem (at !new_emem 'Pre)) }
+
+                  invariant { forall j : int.
+                    0 <= j <= !m2 && j < (select g !new_gmem).esize -> j <> !i ->
+                      edge_valid g j !new_gmem vmem !new_emem}
+
+                  m2 := !m2 + 1;
+                done;
+
+                for k = 0 to (acc g !new_gmem g_alloc).esize - 1 do
+                  (* new count (if is for the case where theres no edges added) *)
+                  invariant { (count g f t 0 k !new_gmem !new_emem) =
+                    (count g f t 0 k !new_gmem (at !new_emem 'Pre)) + (if k < !i + 1 then 0 else 1)}()
+                done;
+                (* got valid edge and mem for it *)
+                assert { edge_valid g !i !new_gmem vmem !new_emem};
+                assert { forall k : int. 0 <= k < (select g !new_gmem).esize ->
+                  edge_valid g k !new_gmem vmem !new_emem };
+                (* new count = old count + 1 *)
+                assert {(all_count g f t !new_gmem !new_emem) = (all_count g f t (at !new_gmem 'Pre) (at !new_emem 'Pre)) + 1};
+              );
+            i := !i + 1;
+          done;
+          (* used for switching branches in if, should be 1 after all checks *)
+          assert{ !stop = 1 }
         );
 
         (!new_emem, !new_gmem)

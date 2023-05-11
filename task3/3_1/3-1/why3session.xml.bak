@@ -2,121 +2,98 @@
 <!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
 "http://why3.lri.fr/why3session.dtd">
 <why3session shape_version="4">
-<prover id="0" name="Z3" version="4.8.12" timelimit="25" steplimit="0" memlimit="900"/>
-<prover id="1" name="Alt-Ergo" version="2.4.2" timelimit="5" steplimit="0" memlimit="900"/>
-<prover id="2" name="CVC4" version="1.7" timelimit="1" steplimit="0" memlimit="2000"/>
+<prover id="0" name="Z3" version="4.8.12" timelimit="30" steplimit="0" memlimit="900"/>
+<prover id="1" name="Alt-Ergo" version="2.4.2" timelimit="30" steplimit="0" memlimit="900"/>
+<prover id="2" name="CVC4" version="1.7" timelimit="30" steplimit="0" memlimit="900"/>
 <file name="../3-1.mlw" expanded="true">
 <theory name="CMemory" sum="d41d8cd98f00b204e9800998ecf8427e" expanded="true">
 </theory>
-<theory name="Task31" sum="b77cd5256e1ae083dec62e42109549ec" expanded="true">
- <goal name="count_one_l" expl="" expanded="true">
+<theory name="Task31" sum="9695113c9d9f8e6722806f279b779add" expanded="true">
+ <goal name="count_one_l" expl="">
  <proof prover="1"><result status="valid" time="0.01" steps="5"/></proof>
  </goal>
  <goal name="ecnt_empty_l" expl="">
- <proof prover="1"><result status="valid" time="1.61" steps="15911"/></proof>
+ <proof prover="1"><result status="valid" time="1.65" steps="15911"/></proof>
  </goal>
  <goal name="WP_parameter ecnt_empty_l2" expl="VC for ecnt_empty_l2">
- <proof prover="1"><result status="timeout" time="5.00"/></proof>
- <proof prover="2"><result status="unknown" time="2.86" steps="426470"/></proof>
+ <proof prover="0"><result status="unknown" time="0.13"/></proof>
+ <proof prover="1"><result status="timeout" time="30.00"/></proof>
+ <proof prover="2"><result status="unknown" time="28.94" steps="3392410"/></proof>
  <transf name="split_goal_wp">
   <goal name="WP_parameter ecnt_empty_l2.1" expl="assertion">
-  <proof prover="2"><result status="unknown" time="0.93" steps="170272"/></proof>
-  <transf name="introduce_premises">
-   <goal name="WP_parameter ecnt_empty_l2.1.1" expl="assertion">
-   <transf name="inline_goal">
-    <goal name="WP_parameter ecnt_empty_l2.1.1.1" expl="assertion">
-    <proof prover="2"><result status="unknown" time="0.94" steps="177976"/></proof>
-    <transf name="inline_all">
-     <goal name="WP_parameter ecnt_empty_l2.1.1.1.1" expl="assertion">
-     <proof prover="2"><result status="unknown" time="0.97" steps="235510"/></proof>
-     <transf name="eliminate_if">
-      <goal name="WP_parameter ecnt_empty_l2.1.1.1.1.1" expl="assertion">
-      <transf name="remove_triggers">
-       <goal name="WP_parameter ecnt_empty_l2.1.1.1.1.1.1" expl="assertion">
-       <proof prover="1"><result status="valid" time="1.48" steps="8753"/></proof>
-       <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="4.68" steps="961096"/></proof>
-       </goal>
-      </transf>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
+  <proof prover="1"><result status="valid" time="0.00" steps="12"/></proof>
   </goal>
   <goal name="WP_parameter ecnt_empty_l2.2" expl="assertion">
-  <proof prover="2"><result status="unknown" time="0.93" steps="213710"/></proof>
+  <proof prover="0"><result status="unknown" time="0.13"/></proof>
+  <proof prover="1"><result status="timeout" time="30.00"/></proof>
+  <proof prover="2"><result status="unknown" time="28.42" steps="5248327"/></proof>
   <transf name="introduce_premises">
    <goal name="WP_parameter ecnt_empty_l2.2.1" expl="assertion">
-   <transf name="inline_goal">
+   <proof prover="0"><result status="unknown" time="0.11"/></proof>
+   <proof prover="1"><result status="timeout" time="30.00"/></proof>
+   <proof prover="2"><result status="unknown" time="28.32" steps="5402864"/></proof>
+   <transf name="inline_all">
     <goal name="WP_parameter ecnt_empty_l2.2.1.1" expl="assertion">
-    <proof prover="2"><result status="unknown" time="0.94" steps="147485"/></proof>
-    <transf name="inline_all">
-     <goal name="WP_parameter ecnt_empty_l2.2.1.1.1" expl="assertion">
-     <proof prover="2"><result status="valid" time="0.06" steps="11421"/></proof>
-     </goal>
-    </transf>
+    <proof prover="1"><result status="valid" time="0.01" steps="35"/></proof>
     </goal>
    </transf>
    </goal>
   </transf>
   </goal>
   <goal name="WP_parameter ecnt_empty_l2.3" expl="variant decrease">
-  <proof prover="2"><result status="valid" time="0.04" steps="8817"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="14"/></proof>
   </goal>
   <goal name="WP_parameter ecnt_empty_l2.4" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.05" steps="9954"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="14"/></proof>
   </goal>
   <goal name="WP_parameter ecnt_empty_l2.5" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.04" steps="9897"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="14"/></proof>
   </goal>
   <goal name="WP_parameter ecnt_empty_l2.6" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.05" steps="10068"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="17"/></proof>
   </goal>
   <goal name="WP_parameter ecnt_empty_l2.7" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.05" steps="10541"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="15"/></proof>
   </goal>
  </transf>
  </goal>
  <goal name="count_all_l" expl="">
- <proof prover="1"><result status="highfailure" time="0.01"/></proof>
- <proof prover="2"><result status="unknown" time="0.09" steps="16264"/></proof>
+ <proof prover="0"><result status="unknown" time="0.06"/></proof>
+ <proof prover="1"><result status="highfailure" time="0.02"/></proof>
+ <proof prover="2"><result status="unknown" time="0.10" steps="16109"/></proof>
  <transf name="split_goal_wp">
   <goal name="count_all_l.1" expl="">
-  <proof prover="2"><result status="valid" time="0.03" steps="9109"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="6"/></proof>
   </goal>
   <goal name="count_all_l.2" expl="">
-  <proof prover="2"><result status="unknown" time="0.09" steps="16069"/></proof>
+  <proof prover="1"><result status="highfailure" time="0.02"/></proof>
   <transf name="introduce_premises">
    <goal name="count_all_l.2.1" expl="">
+   <proof prover="0"><result status="unknown" time="0.04"/></proof>
+   <proof prover="1"><result status="highfailure" time="0.01"/></proof>
+   <proof prover="2"><result status="unknown" time="0.08" steps="15900"/></proof>
    <transf name="inline_all">
     <goal name="count_all_l.2.1.1" expl="">
-    <proof prover="2"><result status="valid" time="0.05" steps="11676"/></proof>
+    <proof prover="1"><result status="valid" time="0.01" steps="11"/></proof>
     </goal>
    </transf>
    </goal>
   </transf>
   </goal>
   <goal name="count_all_l.3" expl="">
-  <proof prover="2"><result status="valid" time="0.05" steps="9195"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="8"/></proof>
   </goal>
  </transf>
  </goal>
  <goal name="count_all_l2" expl="">
+ <proof prover="0"><result status="unknown" time="0.17"/></proof>
  <proof prover="1"><result status="highfailure" time="0.02"/></proof>
- <proof prover="2"><result status="unknown" time="0.08" steps="17355"/></proof>
+ <proof prover="2"><result status="unknown" time="28.41" steps="5163031"/></proof>
  <transf name="introduce_premises">
   <goal name="count_all_l2.1" expl="">
-  <transf name="inline_goal">
+  <transf name="inline_all">
    <goal name="count_all_l2.1.1" expl="">
-   <proof prover="2"><result status="unknown" time="0.92" steps="253226"/></proof>
-   <transf name="inline_all">
-    <goal name="count_all_l2.1.1.1" expl="">
-    <proof prover="2"><result status="valid" time="0.05" steps="12305"/></proof>
-    </goal>
-   </transf>
+   <proof prover="1"><result status="valid" time="0.01" steps="13"/></proof>
    </goal>
   </transf>
   </goal>
@@ -125,475 +102,371 @@
  <goal name="WP_parameter count" expl="VC for count">
  <proof prover="1"><result status="valid" time="0.07" steps="634"/></proof>
  </goal>
- <goal name="WP_parameter add_edge" expl="VC for add_edge" expanded="true">
- <proof prover="1"><result status="timeout" time="5.00"/></proof>
- <proof prover="2"><result status="unknown" time="2.77" steps="295658"/></proof>
- <transf name="split_goal_wp" expanded="true">
+ <goal name="WP_parameter add_edge" expl="VC for add_edge">
+ <transf name="split_goal_wp">
   <goal name="WP_parameter add_edge.1" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="9978"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="14"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.2" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="9985"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="14"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.3" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="10016"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="16"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.4" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.06" steps="10023"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="16"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.5" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.08" steps="12761"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="50"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.6" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="9388"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="20"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.7" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.02" steps="9372"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="20"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.8" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.04" steps="9379"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="20"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.9" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.05" steps="9386"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="20"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.10" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.05" steps="9393"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="20"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.11" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.04" steps="9400"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="20"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.12" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.04" steps="9471"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="23"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.13" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.05" steps="12410"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="38"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.14" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.05" steps="13591"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="55"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.15" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="10133"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="26"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.16" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.08" steps="11882"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="30"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.17" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="9965"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="30"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.18" expl="loop invariant preservation">
-  <proof prover="1"><result status="timeout" time="5.00"/></proof>
+  <proof prover="1"><result status="timeout" time="30.00"/></proof>
+  <proof prover="2"><result status="unknown" time="28.65" steps="2969032"/></proof>
   <transf name="introduce_premises">
    <goal name="WP_parameter add_edge.18.1" expl="loop invariant preservation">
-   <proof prover="0"><result status="unknown" time="14.55"/></proof>
-   <proof prover="1" timelimit="25"><result status="timeout" time="25.00"/></proof>
-   <proof prover="2"><result status="unknown" time="2.80" steps="690527"/></proof>
    <transf name="inline_all">
     <goal name="WP_parameter add_edge.18.1.1" expl="loop invariant preservation">
-    <proof prover="2"><result status="unknown" time="1.04" steps="272001"/></proof>
-    <transf name="eliminate_if">
-     <goal name="WP_parameter add_edge.18.1.1.1" expl="loop invariant preservation">
-     <transf name="remove_triggers">
-      <goal name="WP_parameter add_edge.18.1.1.1.1" expl="loop invariant preservation">
-      <proof prover="1" timelimit="25"><result status="valid" time="6.08" steps="66482"/></proof>
-      <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="5.09" steps="1090976"/></proof>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
+    <proof prover="0"><result status="unknown" time="18.38"/></proof>
+    <proof prover="1"><result status="valid" time="13.39" steps="142335"/></proof>
+    <proof prover="2"><result status="unknown" time="28.72" steps="3874416"/></proof>
     </goal>
    </transf>
    </goal>
   </transf>
   </goal>
   <goal name="WP_parameter add_edge.19" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.06" steps="10005"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="30"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.20" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.06" steps="9866"/></proof>
+  <goal name="WP_parameter add_edge.20" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.01" steps="30"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.21" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.04" steps="11827"/></proof>
+  <goal name="WP_parameter add_edge.21" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.01" steps="37"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.22" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.10" steps="19851"/></proof>
+  <goal name="WP_parameter add_edge.22" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.02" steps="61"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.23" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.06" steps="9990"/></proof>
+  <goal name="WP_parameter add_edge.23" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="67"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.24" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.08" steps="14351"/></proof>
+  <goal name="WP_parameter add_edge.24" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="69"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.25" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="10465"/></proof>
+  <goal name="WP_parameter add_edge.25" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="71"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.26" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.06" steps="13806"/></proof>
+  <goal name="WP_parameter add_edge.26" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.02" steps="37"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.27" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.07" steps="10520"/></proof>
+  <proof prover="1"><result status="valid" time="0.01" steps="37"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.28" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.11" steps="21765"/></proof>
+  <goal name="WP_parameter add_edge.28" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.01" steps="37"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.29" expl="loop invariant preservation">
-  <proof prover="2"><result status="unknown" time="0.95" steps="121810"/></proof>
-  <transf name="introduce_premises">
-   <goal name="WP_parameter add_edge.29.1" expl="loop invariant preservation">
-   <transf name="inline_all">
-    <goal name="WP_parameter add_edge.29.1.1" expl="loop invariant preservation">
-    <proof prover="2"><result status="unknown" time="0.94" steps="135286"/></proof>
-    <transf name="eliminate_if">
-     <goal name="WP_parameter add_edge.29.1.1.1" expl="loop invariant preservation">
-     <transf name="remove_triggers">
-      <goal name="WP_parameter add_edge.29.1.1.1.1" expl="loop invariant preservation">
-      <proof prover="1"><result status="valid" time="1.26" steps="8851"/></proof>
-      <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="4.68" steps="751525"/></proof>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
+  <goal name="WP_parameter add_edge.29" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="37"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.30" expl="loop invariant preservation">
-  <proof prover="2"><result status="unknown" time="0.95" steps="106057"/></proof>
-  <transf name="introduce_premises">
-   <goal name="WP_parameter add_edge.30.1" expl="loop invariant preservation">
-   <transf name="inline_all">
-    <goal name="WP_parameter add_edge.30.1.1" expl="loop invariant preservation">
-    <proof prover="2"><result status="unknown" time="0.95" steps="124874"/></proof>
-    <transf name="eliminate_if">
-     <goal name="WP_parameter add_edge.30.1.1.1" expl="VC for add_edge">
-     <transf name="remove_triggers">
-      <goal name="WP_parameter add_edge.30.1.1.1.1" expl="VC for add_edge">
-      <proof prover="2"><result status="unknown" time="0.93" steps="167945"/></proof>
-      <transf name="split_goal_wp">
-       <goal name="WP_parameter add_edge.30.1.1.1.1.1" expl="loop invariant preservation">
-       <proof prover="2"><result status="unknown" time="0.97" steps="97118"/></proof>
-       <transf name="introduce_premises">
-        <goal name="WP_parameter add_edge.30.1.1.1.1.1.1" expl="loop invariant preservation">
-        <proof prover="1"><result status="valid" time="0.69" steps="7366"/></proof>
-        <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="4.84" steps="333238"/></proof>
-        </goal>
-       </transf>
-       </goal>
-       <goal name="WP_parameter add_edge.30.1.1.1.1.2" expl="loop invariant preservation">
-       <proof prover="2"><result status="unknown" time="1.16" steps="260537"/></proof>
-       <transf name="introduce_premises">
-        <goal name="WP_parameter add_edge.30.1.1.1.1.2.1" expl="loop invariant preservation">
-        <proof prover="1"><result status="valid" time="1.43" steps="12647"/></proof>
-        <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="4.71" steps="623166"/></proof>
-        </goal>
-       </transf>
-       </goal>
-      </transf>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
+  <goal name="WP_parameter add_edge.30" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.01" steps="37"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.31" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.06" steps="10560"/></proof>
+  <goal name="WP_parameter add_edge.31" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.01" steps="37"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.32" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.04" steps="10421"/></proof>
+  <proof prover="1"><result status="valid" time="0.03" steps="182"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.33" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.09" steps="13743"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="33"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.34" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.20" steps="25993"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="88"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.35" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.06" steps="10623"/></proof>
+  <goal name="WP_parameter add_edge.35" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.04" steps="220"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.36" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.06" steps="14523"/></proof>
+  <proof prover="1"><result status="valid" time="0.27" steps="2487"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.37" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="10718"/></proof>
-  </goal>
-  <goal name="WP_parameter add_edge.38" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.18" steps="27162"/></proof>
-  </goal>
-  <goal name="WP_parameter add_edge.39" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.03" steps="10758"/></proof>
-  </goal>
-  <goal name="WP_parameter add_edge.40" expl="assertion">
-  <proof prover="2"><result status="unknown" time="0.95" steps="121238"/></proof>
+  <proof prover="1"><result status="timeout" time="30.00"/></proof>
+  <proof prover="2"><result status="unknown" time="29.58" steps="1142299"/></proof>
   <transf name="introduce_premises">
-   <goal name="WP_parameter add_edge.40.1" expl="assertion">
-   <transf name="inline_goal">
-    <goal name="WP_parameter add_edge.40.1.1" expl="assertion">
-    <proof prover="2"><result status="unknown" time="0.96" steps="77608"/></proof>
-    <transf name="inline_all">
-     <goal name="WP_parameter add_edge.40.1.1.1" expl="assertion">
-     <proof prover="2"><result status="unknown" time="0.97" steps="97003"/></proof>
-     <transf name="eliminate_if">
-      <goal name="WP_parameter add_edge.40.1.1.1.1" expl="assertion">
-      <transf name="remove_triggers">
-       <goal name="WP_parameter add_edge.40.1.1.1.1.1" expl="assertion">
-       <proof prover="1"><result status="valid" time="0.21" steps="1017"/></proof>
-       <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="4.79" steps="354518"/></proof>
-       </goal>
-      </transf>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
+   <goal name="WP_parameter add_edge.37.1" expl="loop invariant preservation">
+   <proof prover="1"><result status="timeout" time="30.00"/></proof>
+   <transf name="inline_all">
+    <goal name="WP_parameter add_edge.37.1.1" expl="loop invariant preservation">
+    <proof prover="1"><result status="valid" time="3.98" steps="44898"/></proof>
     </goal>
    </transf>
    </goal>
   </transf>
+  </goal>
+  <goal name="WP_parameter add_edge.38" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="33"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.39" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.01" steps="34"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.40" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="34"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.41" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.14" steps="27235"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="34"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.42" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.14" steps="18381"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="34"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.43" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.13" steps="19995"/></proof>
+  <goal name="WP_parameter add_edge.43" expl="loop invariant init">
+  <proof prover="1"><result status="timeout" time="30.00"/></proof>
+  <proof prover="2"><result status="valid" time="0.26" steps="30238"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.44" expl="assertion">
-  <proof prover="2"><result status="valid" time="0.05" steps="13405"/></proof>
+  <goal name="WP_parameter add_edge.44" expl="loop invariant preservation">
+  <proof prover="1"><result status="timeout" time="30.00"/></proof>
+  <proof prover="2"><result status="valid" time="0.28" steps="29783"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.45" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.03" steps="10174"/></proof>
+  <goal name="WP_parameter add_edge.45" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.08" steps="418"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.46" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.05" steps="11512"/></proof>
+  <goal name="WP_parameter add_edge.46" expl="postcondition">
+  <proof prover="1"><result status="valid" time="1.15" steps="6052"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.47" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.09" steps="12596"/></proof>
+  <goal name="WP_parameter add_edge.47" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.04" steps="110"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.48" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.05" steps="10172"/></proof>
+  <goal name="WP_parameter add_edge.48" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.04" steps="200"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.49" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.02" steps="10197"/></proof>
+  <goal name="WP_parameter add_edge.49" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.03" steps="62"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.50" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.06" steps="10828"/></proof>
+  <goal name="WP_parameter add_edge.50" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.01" steps="24"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.51" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.04" steps="10607"/></proof>
+  <goal name="WP_parameter add_edge.51" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.01" steps="24"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.52" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.12" steps="15758"/></proof>
+  <goal name="WP_parameter add_edge.52" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.01" steps="25"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.53" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.04" steps="10660"/></proof>
+  <goal name="WP_parameter add_edge.53" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.01" steps="24"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.54" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="10667"/></proof>
+  <goal name="WP_parameter add_edge.54" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.01" steps="24"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.55" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.06" steps="10011"/></proof>
+  <goal name="WP_parameter add_edge.55" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.01" steps="32"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.56" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.05" steps="13267"/></proof>
+  <goal name="WP_parameter add_edge.56" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.01" steps="36"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.57" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.19" steps="22696"/></proof>
+  <goal name="WP_parameter add_edge.57" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.03" steps="102"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.58" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.06" steps="14316"/></proof>
+  <goal name="WP_parameter add_edge.58" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="40"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.59" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.21" steps="24559"/></proof>
+  <goal name="WP_parameter add_edge.59" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="40"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.60" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.06" steps="11101"/></proof>
+  <goal name="WP_parameter add_edge.60" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.02" steps="45"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.61" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.05" steps="13961"/></proof>
+  <goal name="WP_parameter add_edge.61" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.02" steps="57"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.62" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="10787"/></proof>
+  <goal name="WP_parameter add_edge.62" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.07" steps="281"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.63" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.11" steps="26777"/></proof>
+  <goal name="WP_parameter add_edge.63" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.03" steps="85"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.64" expl="loop invariant preservation">
-  <proof prover="2"><result status="unknown" time="0.92" steps="98329"/></proof>
-  <transf name="introduce_premises">
-   <goal name="WP_parameter add_edge.64.1" expl="loop invariant preservation">
-   <transf name="inline_all">
-    <goal name="WP_parameter add_edge.64.1.1" expl="loop invariant preservation">
-    <proof prover="2"><result status="unknown" time="0.95" steps="114771"/></proof>
-    <transf name="eliminate_if">
-     <goal name="WP_parameter add_edge.64.1.1.1" expl="loop invariant preservation">
-     <transf name="remove_triggers">
-      <goal name="WP_parameter add_edge.64.1.1.1.1" expl="loop invariant preservation">
-      <proof prover="1"><result status="valid" time="1.01" steps="6000"/></proof>
-      <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="4.79" steps="451737"/></proof>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
+  <goal name="WP_parameter add_edge.64" expl="loop invariant init">
+  <proof prover="1"><result status="timeout" time="30.00"/></proof>
+  <proof prover="2"><result status="valid" time="0.30" steps="40484"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.65" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.22" steps="32371"/></proof>
+  <goal name="WP_parameter add_edge.65" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="48"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.66" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.03" steps="10827"/></proof>
+  <goal name="WP_parameter add_edge.66" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.03" steps="52"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.67" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.06" steps="10688"/></proof>
+  <goal name="WP_parameter add_edge.67" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="52"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.68" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.05" steps="13881"/></proof>
+  <goal name="WP_parameter add_edge.68" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.08" steps="308"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.69" expl="loop invariant init">
-  <proof prover="2"><result status="valid" time="0.10" steps="15677"/></proof>
+  <goal name="WP_parameter add_edge.69" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="7.71" steps="43248"/></proof>
+  <proof prover="2"><result status="unknown" time="29.25" steps="2023494"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.70" expl="precondition">
-  <proof prover="2"><result status="valid" time="0.06" steps="10892"/></proof>
+  <goal name="WP_parameter add_edge.70" expl="loop invariant preservation">
+  <proof prover="1"><result status="timeout" time="30.00"/></proof>
+  <proof prover="2"><result status="valid" time="0.25" steps="35598"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.71" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.06" steps="14822"/></proof>
+  <goal name="WP_parameter add_edge.71" expl="loop variant decrease">
+  <proof prover="1"><result status="valid" time="0.02" steps="52"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.72" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="10973"/></proof>
+  <goal name="WP_parameter add_edge.72" expl="precondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="55"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.73" expl="loop invariant preservation">
-  <proof prover="2"><result status="unknown" time="0.97" steps="99984"/></proof>
-  <transf name="introduce_premises">
-   <goal name="WP_parameter add_edge.73.1" expl="loop invariant preservation">
-   <transf name="inline_all">
-    <goal name="WP_parameter add_edge.73.1.1" expl="loop invariant preservation">
-    <proof prover="2"><result status="unknown" time="0.92" steps="131752"/></proof>
-    <transf name="eliminate_if">
-     <goal name="WP_parameter add_edge.73.1.1.1" expl="VC for add_edge">
-     <transf name="remove_triggers">
-      <goal name="WP_parameter add_edge.73.1.1.1.1" expl="VC for add_edge">
-      <proof prover="2"><result status="unknown" time="0.94" steps="127165"/></proof>
-      <transf name="split_goal_wp">
-       <goal name="WP_parameter add_edge.73.1.1.1.1.1" expl="loop invariant preservation">
-       <proof prover="2"><result status="unknown" time="0.94" steps="91711"/></proof>
-       <transf name="introduce_premises">
-        <goal name="WP_parameter add_edge.73.1.1.1.1.1.1" expl="loop invariant preservation">
-        <proof prover="1"><result status="valid" time="0.86" steps="7202"/></proof>
-        <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="5.06" steps="430206"/></proof>
-        </goal>
-       </transf>
-       </goal>
-       <goal name="WP_parameter add_edge.73.1.1.1.1.2" expl="loop invariant preservation">
-       <proof prover="2"><result status="unknown" time="0.95" steps="131152"/></proof>
-       <transf name="introduce_premises">
-        <goal name="WP_parameter add_edge.73.1.1.1.1.2.1" expl="loop invariant preservation">
-        <proof prover="1"><result status="valid" time="2.28" steps="22580"/></proof>
-        <proof prover="2" timelimit="5" memlimit="4000"><result status="unknown" time="4.78" steps="434222"/></proof>
-        </goal>
-       </transf>
-       </goal>
-      </transf>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
+  <goal name="WP_parameter add_edge.73" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.03" steps="79"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.74" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.05" steps="11009"/></proof>
+  <goal name="WP_parameter add_edge.74" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.02" steps="68"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.75" expl="assertion">
-  <proof prover="2"><result status="valid" time="0.12" steps="17911"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="83"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.76" expl="assertion">
-  <proof prover="2"><result status="valid" time="0.06" steps="17114"/></proof>
+  <goal name="WP_parameter add_edge.76" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="73"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.77" expl="assertion">
-  <proof prover="2"><result status="valid" time="0.13" steps="18450"/></proof>
+  <goal name="WP_parameter add_edge.77" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="73"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.78" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.10" steps="15288"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="73"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.79" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.03" steps="11998"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="88"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.80" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="11483"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="73"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.81" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.13" steps="20311"/></proof>
+  <proof prover="1"><result status="valid" time="0.03" steps="94"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.82" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.05" steps="15255"/></proof>
+  <goal name="WP_parameter add_edge.82" expl="loop variant decrease">
+  <proof prover="1"><result status="valid" time="0.02" steps="73"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.83" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.10" steps="21956"/></proof>
+  <goal name="WP_parameter add_edge.83" expl="loop invariant init">
+  <proof prover="1"><result status="valid" time="0.02" steps="88"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.84" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.07" steps="12038"/></proof>
+  <goal name="WP_parameter add_edge.84" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.83" steps="6832"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.85" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.05" steps="12933"/></proof>
+  <goal name="WP_parameter add_edge.85" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.08" steps="360"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.86" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="10774"/></proof>
+  <goal name="WP_parameter add_edge.86" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.04" steps="96"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.87" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.10" steps="15500"/></proof>
+  <goal name="WP_parameter add_edge.87" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.04" steps="131"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.88" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.06" steps="10742"/></proof>
+  <proof prover="1"><result status="valid" time="0.03" steps="66"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.89" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="10754"/></proof>
+  <proof prover="1"><result status="valid" time="0.03" steps="66"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.90" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.06" steps="13288"/></proof>
+  <proof prover="1"><result status="valid" time="0.03" steps="66"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.91" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.04" steps="10814"/></proof>
+  <goal name="WP_parameter add_edge.91" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.11" steps="567"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.92" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.08" steps="12552"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="66"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.93" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="10721"/></proof>
+  <proof prover="1"><result status="valid" time="0.07" steps="265"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.94" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.05" steps="11011"/></proof>
+  <goal name="WP_parameter add_edge.94" expl="loop variant decrease">
+  <proof prover="1"><result status="valid" time="0.03" steps="67"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.95" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.05" steps="10689"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="42"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.96" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.04" steps="10701"/></proof>
+  <proof prover="1"><result status="valid" time="0.02" steps="42"/></proof>
   </goal>
   <goal name="WP_parameter add_edge.97" expl="loop invariant preservation">
-  <proof prover="2"><result status="valid" time="0.05" steps="12921"/></proof>
+  <proof prover="1"><result status="valid" time="0.04" steps="135"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.98" expl="loop variant decrease">
-  <proof prover="2"><result status="valid" time="0.06" steps="10761"/></proof>
+  <goal name="WP_parameter add_edge.98" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="42"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.99" expl="assertion">
-  <proof prover="2"><result status="valid" time="0.04" steps="12665"/></proof>
+  <goal name="WP_parameter add_edge.99" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="42"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.100" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.05" steps="10616"/></proof>
+  <goal name="WP_parameter add_edge.100" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.03" steps="55"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.101" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.03" steps="10834"/></proof>
+  <goal name="WP_parameter add_edge.101" expl="loop variant decrease">
+  <proof prover="1"><result status="valid" time="0.02" steps="42"/></proof>
   </goal>
-  <goal name="WP_parameter add_edge.102" expl="postcondition">
-  <proof prover="2"><result status="valid" time="0.10" steps="12840"/></proof>
+  <goal name="WP_parameter add_edge.102" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="40"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.103" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="40"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.104" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.01" steps="40"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.105" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.01" steps="40"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.106" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.02" steps="40"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.107" expl="loop invariant preservation">
+  <proof prover="1"><result status="valid" time="0.03" steps="48"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.108" expl="loop variant decrease">
+  <proof prover="1"><result status="valid" time="0.02" steps="40"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.109" expl="assertion">
+  <proof prover="1"><result status="valid" time="0.03" steps="52"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.110" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.02" steps="38"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.111" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.01" steps="38"/></proof>
+  </goal>
+  <goal name="WP_parameter add_edge.112" expl="postcondition">
+  <proof prover="1"><result status="valid" time="0.03" steps="50"/></proof>
   </goal>
  </transf>
  </goal>
