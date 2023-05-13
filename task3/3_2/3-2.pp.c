@@ -73,12 +73,12 @@ typedef struct {
 	\valid(g->vertices + (0 .. g->vsize - 1)) &&
 	\valid(g->edges + (0 .. g->esize - 1)) &&
 	edges_valid(g, g->ecnt) &&
-	(\forall integer k; g->ecnt <= k < g->esize ==> !g->edges[k].existent);
-*/
+	(\forall integer k; g->ecnt <= k < g->esize ==> !g->edges[k].existent);*/
+// */
 
 /*@ predicate full(Graph *g) = range_existent(g, 0, g->esize);
-    predicate range_existent(Graph *g, integer m, integer n) = \forall integer k; m <= k < n ==> g->edges[k].existent;
-*/
+    predicate range_existent(Graph *g, integer m, integer n) = \forall integer k; m <= k < n ==> g->edges[k].existent;*/
+// */
 
 /*@ axiomatic EdgesCount {
     logic integer count{L}(Graph *g, integer f, integer t, integer m, integer n);
@@ -131,8 +131,8 @@ typedef struct {
             (m <= n <= k)
             ==>
             count_split_p(g, f, t, m, n, k) &&
-            (count(g, f, t, m, k) == count(g, f, t, m, n) + count(g, f, t, n, k));
-*/
+            (count(g, f, t, m, k) == count(g, f, t, m, n) + count(g, f, t, n, k));*/
+// */
 
 /*@
     ghost
@@ -151,8 +151,8 @@ typedef struct {
             ecnt_empty_g(g, f, t, (k - 1));
         }
     }
-
 */
+// */
 
 /*@
     requires \valid(g) && graph_valid(g);
@@ -160,8 +160,8 @@ typedef struct {
     requires is_vertex(g, t);
     requires g->vertices[f].existent;
     requires g->vertices[t].existent;
-    ensures \result == all_count(g, f, t);
-*/
+    ensures \result == all_count(g, f, t);*/
+// */
 int
 count(Graph *g, int f, int t)
 {
@@ -198,8 +198,8 @@ count(Graph *g, int f, int t)
   requires !full(g);
   ensures graph_valid(g);
   ensures all_count(g, f, t) == all_count{Pre}(g, f, t) + 1;
-  ensures \forall integer f2, t2; (f2 != f || t2 != t) ==> all_count(g, f2, t2) == all_count{Pre}(g, f2, t2);
-*/
+  ensures \forall integer f2, t2; (f2 != f || t2 != t) ==> all_count(g, f2, t2) == all_count{Pre}(g, f2, t2);*/
+// */
 void
 add_edge(Graph *g, int f, int t)
 {
