@@ -1,29 +1,34 @@
-SOURCE=map.c
+SOURCE=map.c main.c
+OBJS=map main
 TARGET=map
 
-CFLAGS = -I. -std=gnu17 -g
+CFLAGS = -I. -std=gnu17 -g -O0
 
 all: $(TARGET)
 
-cov: $(TARGET)-cov
+cov:
+	gcc $(CFLAGS) $(SOURCE) --coverage -o $(TARGET) -I. $^
 
 $(TARGET): $(SOURCE)
 	gcc $(CFLAGS) -o $@ -I. $^
 
-$(TARGET)-cov: $(SOURCE)
-	gcc $(CFLAGS) --coverage -o $(TARGET) -I. $^
-
-run:
+run: $(TARGET)
 	./$(TARGET)
 
-valgrind:
+run-cov: cov
+	./$(TARGET)
+
+valgrind: $(TARGET)
 	valgrind ./$(TARGET)
+
+leak:
+	valgrind --leak-check=full ./$(TARGET)
 
 gcov: cov
-	valgrind ./$(TARGET)
-	lcov -t "$(TARGET)" -o $(TARGET).info -c -d .
-	genhtml -o $(TARGET)-lcov-report $(TARGET).info
+	./$(TARGET)
+	lcov -t "$(TARGET)" -o $(TARGET).info --rc lcov_branch_coverage=1 -c -d .
+	genhtml -o $(TARGET)-lcov-report --rc lcov_branch_coverage=1 $(TARGET).info
 
 clean:
-	rm -rf $(TARGET) $(TARGET).gcno $(TARGET).gcda $(TARGET).info $(TARGET)-lcov-report
+	rm -rf $(TARGET) *.gcno *.gcda *.info $(TARGET)-lcov-report
 
