@@ -1,12 +1,12 @@
 // LCOV_EXCL_START
-#ifndef __MAP_H__
-#define __MAP_H__
+// #ifndef __MAP_H__
+// #define __MAP_H__
 
-#include "maptypes.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <limits.h>
+// #include "maptypes.h"
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <stdbool.h>
+// #include <limits.h>
 
 /*
   Вариант А
@@ -99,8 +99,8 @@
   logic integer count_exist(Map *map) = count(map, 0, map->capacity); // посчитать все existent в Map
 
   lemma count_zero: \forall Map *map, integer  m, n; m >= n ==> count(map, m, n) == 0; // пограничные штуки для count = 0
-  lemma count_one: \forall Map *map, integer  m; count(map, m, m + 1) == (map->items[m].existent ? 1 : 0); // и count == 1
-*/
+  lemma count_one: \forall Map *map, integer  m; count(map, m, m + 1) == (map->items[m].existent ? 1 : 0); // и count == 1*/
+// */
 
 /*@
 
@@ -111,7 +111,7 @@
     \valid(map->items + (0..map->capacity - 1)); // check map ptr is valid + map->items mem is valid
 
   predicate is_valid_map_sizes (Map *map) =
-    0 <= map->count <= map->capacity <= INT_MAX; // проверка a5
+    0 <= map->count <= map->capacity <= 0x7fffffff; // проверка a5
 
   predicate begin_ok (Map *map) =
     map->count > 0 ==> map->items[0].existent == 1; // проверка a7
@@ -123,10 +123,10 @@
       (0 == map->items[idx].existent) // проверка b2, c1, d1
       ||
       (1 == map->items[idx].existent ==>
-      (INT_MIN <= map->items[idx].key.a <= INT_MAX &&
-      INT_MIN <= map->items[idx].key.b <= INT_MAX &&
-      INT_MIN <= map->items[idx].value.c <= INT_MAX &&
-      INT_MIN <= map->items[idx].value.d <= INT_MAX)
+      ((-0x7fffffff - 1) <= map->items[idx].key.a <= 0x7fffffff &&
+      (-0x7fffffff - 1) <= map->items[idx].key.b <= 0x7fffffff &&
+      (-0x7fffffff - 1) <= map->items[idx].value.c <= 0x7fffffff &&
+      (-0x7fffffff - 1) <= map->items[idx].value.d <= 0x7fffffff)
     );
 
   predicate count_ok (Map *map) =
@@ -162,7 +162,7 @@
     (\at(v1->d, L1) == \at(v2->d, L2)); // сравнение значений (+ по временным меткам)
 
   predicate valid_existence (Item *it) =
-    0 <= it->existent <= 1; // existence is bool, проверка b1
+    0 <= it->existent <= 1; // existence is _Bool, проверка b1
 
   predicate item_exists (Item *it) =
     it->existent == 1; // existent == 1 ?
@@ -254,8 +254,8 @@
     unique_keys(map) &&
     all_valid_existence(map) &&
     gap_ok(map); // проверка всех условий на Map
-
 */
+// */
 
 int initializeMap(Map *map, int size);
 
@@ -266,7 +266,7 @@ int initializeMap(Map *map, int size);
     requires \freeable(map->items); // dynamic map can be freed
     // проверка А2
 
-    assigns map->items; // for map->items = NULL
+    assigns map->items; // for map->items = ((void *)0)
     assigns map->items[0..map->capacity - 1]; // for deinit with 0, dont need that
 
     allocates \nothing; // проверка A7
@@ -274,7 +274,7 @@ int initializeMap(Map *map, int size);
     frees map->items; // dynamic map gets freed
     // проверка А4, А1
 
-    ensures \valid(map) && (map->items == NULL); // memory pointers are valid
+    ensures \valid(map) && (map->items == ((void *)0)); // memory pointers are valid
     // проверка A6, А3
     ensures !is_valid_map(map); // проверка А5
     ensures same_capacity{Old, Post}(map); // capacity stays the same
@@ -289,7 +289,7 @@ int addElement(Map *map, Key *key, Value *value);
   /*@
     requires is_valid_map(map); // проверка B11
     requires \valid(key); // проверка B11
-    requires value == NULL || \valid(value); // проверка B11
+    requires value == ((void *)0) || \valid(value); // проверка B11
 
     assigns *value; // проверка B5 (возможность записи по *value)
 
@@ -358,5 +358,5 @@ int removeElement(Map *map, Key *key, Value *value);
   */
 int getElement(Map *map, Key *key, Value *value);
 
-#endif // __MAP_H__
+// #endif // __MAP_H__
 // LCOV_EXCL_STOP

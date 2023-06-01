@@ -1,4 +1,4 @@
-#include "map.h"
+// #include "map.h"
 
 // Map: { items, capacity, count }
 // Items: { Key, Value, int present }
@@ -8,7 +8,7 @@
 
   // makes map
 int initializeMap(Map *map, int size){
-  if (size < 0 || map == NULL){
+  if (size < 0 || map == ((void *)0)){
     return 1;
   }
 
@@ -18,7 +18,7 @@ int initializeMap(Map *map, int size){
 
   map->items = malloc(size * sizeof(Item));
 
-  if (map->items == NULL) {
+  if (map->items == ((void *)0)) {
     return 1;
   }
 
@@ -31,10 +31,10 @@ int initializeMap(Map *map, int size){
 
   // frees, not including map
 void finalizeMap(Map *map){
-  if (map == NULL){
+  if (map == ((void *)0)){
     return ;
   }
-  if (map->items == NULL){
+  if (map->items == ((void *)0)){
     return ;
   }
   /*@
@@ -46,14 +46,14 @@ void finalizeMap(Map *map){
     map->items[i].existent = 0;
   }
   free(map->items);
-  map->items = NULL;
+  map->items = ((void *)0);
 };
 
 int addElement(Map *map, Key *key, Value *value){
-  if (map == NULL)
+  if (map == ((void *)0))
     return -1;
 
-  if (map->items == NULL)
+  if (map->items == ((void *)0))
     return -1;
 
   for (int i = 0; i < map->capacity; i++){
@@ -83,13 +83,13 @@ int addElement(Map *map, Key *key, Value *value){
 };
 
 int removeElement(Map *map, Key *key, Value *value){
-  if (map == NULL)
+  if (map == ((void *)0))
     return -1;
 
-  if (map->items == NULL)
+  if (map->items == ((void *)0))
     return -1;
 
-  if (key == NULL)
+  if (key == ((void *)0))
     return -1;
 
   int end = 0;
@@ -98,7 +98,7 @@ int removeElement(Map *map, Key *key, Value *value){
     if (map->items[i].key.a == key->a && map->items[i].key.b == key->b && map->items[i].existent == 1){
       map->count -= 1;
       // write removed value if not NULL
-      if (value != NULL) {
+      if (value != ((void *)0)) {
         *value = map->items[i].value;
       }
 
@@ -127,18 +127,18 @@ int removeElement(Map *map, Key *key, Value *value){
 };
 
 int getElement(Map *map, Key *key, Value *value){
-  if (map == NULL)
+  if (map == ((void *)0))
     return -1;
 
-  if (map->items == NULL)
+  if (map->items == ((void *)0))
     return -1;
 
-  if (key == NULL)
+  if (key == ((void *)0))
     return -1;
 
   for (int i = 0; i < map->capacity; i++){
     if (map->items[i].existent == 1 && map->items[i].key.a == key->a && map->items[i].key.b == key->b){
-      if (value == NULL)
+      if (value == ((void *)0))
         return -1;
       *value = map->items[i].value;
       return 1;

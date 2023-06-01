@@ -1,0 +1,119 @@
+
+axiomatic Padding {
+
+  logic type padding
+  
+}
+
+tag voidP = {
+}
+
+type voidP = [voidP]
+
+tag charP = voidP with {
+  int8 charM: 8;
+}
+
+tag __anonstruct_Key_2 = {
+  int32 a: 32; 
+  int32 b: 32;
+}
+
+type __anonstruct_Key_2 = [__anonstruct_Key_2]
+
+tag __anonstruct_Value_3 = {
+  int32 c: 32; 
+  int32 d: 32;
+}
+
+type __anonstruct_Value_3 = [__anonstruct_Value_3]
+
+tag __anonstruct_Item_4 = voidP with {
+  __anonstruct_Key_2[0] key: 64; 
+  __anonstruct_Value_3[0] value: 64; 
+  int32 existent: 32;
+}
+
+tag __anonstruct_Map_5 = {
+  __anonstruct_Item_4[..] items: 64; 
+  int32 capacity: 32; 
+  int32 count: 32;
+}
+
+type __anonstruct_Map_5 = [__anonstruct_Map_5]
+
+predicate is_valid_map_mem{L}(__anonstruct_Map_5[..] map) =
+\at((\at((((\offset_min(\at(map,L)) <= \at(0,L)) &&
+            (\offset_max(\at(map,L)) >= \at(0,L))) &&
+           true),L) &&
+      \at((if (\at(0,L) <= \at(((map.capacity :> integer) - 1),L)) then 
+          (((\offset_min(\at(map.items,L)) <= \at(0,L)) &&
+             (\offset_max(\at(map.items,L)) >=
+               \at(((map.capacity :> integer) - 1),L))) &&
+            (\forall integer __framac_tmp1;
+              (((\at(0,L) <= __framac_tmp1) &&
+                 (__framac_tmp1 <= \at(((map.capacity :> integer) - 1),L))) ==>
+                ((((\offset_min(\at((map.items + __framac_tmp1).key,L)) <=
+                     \at(0,L)) &&
+                    (\offset_max(\at((map.items + __framac_tmp1).key,L)) >=
+                      \at(0,L))) &&
+                   true) &&
+                  (((\offset_min(\at((map.items + __framac_tmp1).value,L)) <=
+                      \at(0,L)) &&
+                     (\offset_max(\at((map.items + __framac_tmp1).value,L)) >=
+                       \at(0,L))) &&
+                    true))))) else true),L)),L)
+
+predicate is_valid_map_sizes{L}(__anonstruct_Map_5[..] map_0) =
+\at(((((((0 :> int32) <= map_0.count) &&
+         (map_0.count <= (0x7fffffff :> int32))) &&
+        ((0 :> int32) <= map_0.capacity)) &&
+       (map_0.capacity <= (0x7fffffff :> int32))) &&
+      (map_0.capacity >= map_0.count)),L)
+
+predicate is_valid_item{L}(__anonstruct_Map_5[..] map_1, integer idx) =
+\at(((((is_valid_map_mem{L}(map_1) && is_valid_map_sizes{L}(map_1)) &&
+        (0 <= idx)) &&
+       (idx < (map_1.capacity :> integer))) ==>
+      (((0 :> int32) == (map_1.items + idx).existent) ||
+        (((1 :> int32) == (map_1.items + idx).existent) ==>
+          ((((((((((- 0x7fffffff) - 1) <=
+                   ((map_1.items + idx).key.a :> integer)) &&
+                  ((map_1.items + idx).key.a <= (0x7fffffff :> int32))) &&
+                 (((- 0x7fffffff) - 1) <=
+                   ((map_1.items + idx).key.b :> integer))) &&
+                ((map_1.items + idx).key.b <= (0x7fffffff :> int32))) &&
+               (((- 0x7fffffff) - 1) <=
+                 ((map_1.items + idx).value.c :> integer))) &&
+              ((map_1.items + idx).value.c <= (0x7fffffff :> int32))) &&
+             (((- 0x7fffffff) - 1) <=
+               ((map_1.items + idx).value.d :> integer))) &&
+            ((map_1.items + idx).value.d <= (0x7fffffff :> int32)))))),L)
+
+predicate is_valid_items{L}(__anonstruct_Map_5[..] map_2) =
+\at((\forall integer i;
+      (((0 <= i) && (i < (map_2.capacity :> integer))) ==>
+        is_valid_item{L}(map_2, i))),L)
+
+predicate is_valid_map{L}(__anonstruct_Map_5[..] map_3) =
+\at(((is_valid_map_mem{L}(map_3) && is_valid_map_sizes{L}(map_3)) &&
+      is_valid_items{L}(map_3)),L)
+
+unit finalizeMap(__anonstruct_Map_5[..] map)
+  requires ((_C_4 : is_valid_map{Here}(map)) &&
+             (_C_5 : \freeable{Here}(map.items)));
+behavior default:
+  assigns map.items,
+  (map.items + [0..((map.capacity :> integer) - 1)]).key.a,
+  (map.items + [0..((map.capacity :> integer) - 1)]).key.b,
+  (map.items + [0..((map.capacity :> integer) - 1)]).value.c,
+  (map.items + [0..((map.capacity :> integer) - 1)]).value.d,
+  (map.items + [0..((map.capacity :> integer) - 1)]).existent;
+  allocates \at(map.items,Old);
+  ensures (_C_1 : ((_C_2 : \at(\at((((\offset_min(\at(map,Old)) <=
+                                       \at(0,Old)) &&
+                                      (\offset_max(\at(map,Old)) >=
+                                        \at(0,Old))) &&
+                                     true),Here),Old)) &&
+                    (_C_3 : (\at(map,Old).items == null))));
+;

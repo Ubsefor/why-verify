@@ -351,7 +351,10 @@ bool removeElement_test_null(void){
 
   assert(addElement(&test, &key_test, &val_test) == 1);
   assert(removeElement(&test, &key_test, val_ret) == 1);
+  assert(&test != NULL);
   assert(val_ret == NULL);
+  assert(removeElement(&test, NULL, &val_test) == -1);
+  assert(&test != NULL);
 
   UNMAP(test);
 

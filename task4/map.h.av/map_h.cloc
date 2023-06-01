@@ -1,0 +1,30 @@
+[_C_4]
+file = "/home/ubse/why3/why-verify/task4/map.h"
+line = 55
+begin = 13
+end = 30
+
+[_C_5]
+file = "/home/ubse/why3/why-verify/task4/map.h"
+line = 56
+begin = 13
+end = 34
+
+[_C_3]
+file = "/home/ubse/why3/why-verify/task4/map.h"
+line = 65
+begin = 28
+end = 53
+
+[_C_2]
+file = "/home/ubse/why3/why-verify/task4/map.h"
+line = 65
+begin = 12
+end = 23
+
+[_C_1]
+file = "/home/ubse/why3/why-verify/task4/map.h"
+line = 65
+begin = 12
+end = 54
+
