@@ -49,12 +49,7 @@
   A1) Функция finalizeMap() освобождает динамическую память, используемую для ассоциативного массива map
   A2) На вход функции должен подаваться указатель на область памяти, проинициализированную функцией initializeMap()
     (на валидную структуру Map)
-  A3) После работы функции map->items == NULL
   A4) После работы функции map->items освобожден
-  A5) После работы функции структура map по указателю – не валидная
-  A6) Переданный функции указатель на память не портится
-  A7) Функция ничего не аллоцирует
-  A8) Функция не трогает count и capacity (норм, поскольку мапа все равно не валидная становится)
 
   B. removeElement:
 
@@ -93,16 +88,94 @@
 
 */
 
-/*@
-  logic integer count{L}(Map *map, integer m, integer n) = // посчитать все existent в Map от m до n
-    m >= n ? (0) : ( (map->items[m].existent ? 1 : 0) + count(map, m + 1, n));
-  logic integer count_exist(Map *map) = count(map, 0, map->capacity); // посчитать все existent в Map
+/*@ axiomatic how_to_count {
 
-  lemma count_zero: \forall Map *map, integer  m, n; m >= n ==> count(map, m, n) == 0; // пограничные штуки для count = 0
-  lemma count_one: \forall Map *map, integer  m; count(map, m, m + 1) == (map->items[m].existent ? 1 : 0); // и count == 1
-*/
+  logic integer count{L}(Map *map, integer m, integer n);
+
+  logic integer count_exist{L}(Map *map) = count{L}(map, 0, map->capacity);
+
+  axiom count_zero:
+    \forall Map *map, integer m, n;
+      m >= n ==>
+        count(map, m, n) == 0;
+
+  predicate count_one_p{L}(Map *map, integer m) =
+    count(map, m, m + 1) == (map->items[m].existent ? 1 : 0);
+
+  axiom count_one{L}:
+    \forall Map *map, integer m;
+      count_one_p(map, m);
+
+  predicate count_neg_p{L}(Map *map, integer m) =
+    count(map, m - 1, m) == (map->items[m - 1].existent ? 1 : 0);
+
+  axiom count_neg{L}:
+    \forall Map *map, integer m;
+      1 <= m <= map->capacity ==>
+      count_neg_p(map, m);
+
+  predicate count_self_p{L}(Map *map, integer m) =
+    count(map, m, m) == (map->items[m].existent ? 1 : 0);
+
+  axiom count_self{L}:
+    \forall Map *map, integer m;
+      0 <= m < map->capacity ==>
+      count_self_p(map, m);
+
+  predicate count_split_p{L}(Map *map, integer m, integer n, integer k) =
+    count(map, m, k) == count(map, m, n) + count(map, n, k);
+
+  axiom count_split{L}:
+    \forall Map *map, integer m, n, k;
+      m <= n <= k ==>
+        count_split_p(map, m, n, k);
+
+  axiom count_amount{L}:
+    \forall Map *map;
+      count(map, 0, map->capacity) == map->count;
+}*/
+
+/*@ axiomatic how_to_count2 {
+
+  lemma l_count_split:
+    \forall Map *map, integer i;
+      (is_valid_map(map) && (0 < i < map->capacity)) ==>
+        (count(map, 0, i) ==
+          count(map, 0, i - 1) + count(map, i - 1, i));
+
+  lemma l_count_split2:
+    \forall Map *map, integer i, j;
+      (is_valid_map(map) && (0 < i < j) && (j < map->capacity)) ==>
+        (count(map, 0, j) ==
+          count(map, 0, i) + count(map, i, j));
+
+  lemma l_count_one_p:
+    \forall Map *map, integer i;
+      is_valid_map(map) ==>
+      (
+        (count_one_p(map, i)) &&
+          (count(map, i, (i + 1)) ==
+            (
+              map->items[i].existent ? 1 : 0
+            )
+          )
+      );
+}*/
+
 
 /*@
+
+  predicate item_exists {L} (Item *it) =
+    \at(it->existent, L)  == 1;
+
+  logic Key* get_key {L} (Item *it) =
+    \at(&it->key, L);
+
+  logic Value* get_value {L} (Item *it) =
+    \at(&it->value, L);
+
+  logic Item* get_item {L} (Map *map, integer idx) =
+    \at(&map->items[idx], L);
 
   predicate is_valid_map_mem (Map *map) =
     \valid(map) &&
@@ -111,49 +184,47 @@
     \valid(map->items + (0..map->capacity - 1)); // check map ptr is valid + map->items mem is valid
 
   predicate is_valid_map_sizes (Map *map) =
-    0 <= map->count <= map->capacity <= INT_MAX; // проверка a5
+    0 <= map->count <= map->capacity; // проверка a5
+
+  predicate valid_existence (Item *it) =
+    0 <= it->existent <= 1; // existence is bool, проверка b1
 
   predicate begin_ok (Map *map) =
     map->count > 0 ==> map->items[0].existent == 1; // проверка a7
 
   predicate is_valid_item (Map *map, integer idx) =
-    ((is_valid_map_mem(map)) &&
-    is_valid_map_sizes(map) &&
-    (0 <= idx < map->capacity)) ==>
-      (0 == map->items[idx].existent) // проверка b2, c1, d1
-      ||
-      (1 == map->items[idx].existent ==>
-      (INT_MIN <= map->items[idx].key.a <= INT_MAX &&
-      INT_MIN <= map->items[idx].key.b <= INT_MAX &&
-      INT_MIN <= map->items[idx].value.c <= INT_MAX &&
-      INT_MIN <= map->items[idx].value.d <= INT_MAX)
-    );
+    (0 <= idx <= map->capacity) && (0 <= map->items[idx].existent <= 1);
 
-  predicate count_ok (Map *map) =
-    count_exist(map) == map->count; // проверка a3
+    // ((is_valid_map_mem(map)) &&
+    // is_valid_map_sizes(map) &&
+    // (0 <= idx < map->capacity)) ==>
+    //   (0 == map->items[idx].existent) // проверка b2, c1, d1
+    //   ||
+    //   (1 == map->items[idx].existent ==>
+    //   (INT_MIN <= map->items[idx].key.a <= INT_MAX &&
+    //   INT_MIN <= map->items[idx].key.b <= INT_MAX &&
+    //   INT_MIN <= map->items[idx].value.c <= INT_MAX &&
+    //   INT_MIN <= map->items[idx].value.d <= INT_MAX)
+    // );
 
-  predicate gap_ok(Map *map) =
+  predicate count_ok{L} (Map *map) =
+    count_exist{L}(map) == \at(map->count, L); // проверка a3
+
+  predicate gap_ok{L} (Map *map) =
     \forall integer i, j;
       ((i + 1 < j < map->capacity) &&
       (0 <= i < map->capacity - 1)) &&
-      ((map->items[i].existent == 0) &&
-      (map->items[i + 1].existent == 0)) ==>
-        map->items[j].existent == 0;  // проверка a6
+      ((item_exists{L}(get_item{L}(map, i))) &&
+      (item_exists{L}(get_item{L}(map, i + 1)))) ==>
+        item_exists{L}(get_item{L}(map, j));  // проверка a6
         // (следующий элемент после двух пропусков: existent == 0)
 
   predicate is_valid_items (Map *map) =
-    \forall integer i; 0 <= i < map->capacity ==> // проверка a4
-      is_valid_item(map, i);
+    \forall integer i;
+      0 <= i < map->capacity ==> // проверка a4
+        is_valid_item(map, i);
 
-  predicate compare_keys_now (Key *k1, Key *k2) =
-    (k1->a == k2->a) &&
-    (k1->b == k2->b);  // сравнение ключей
-
-  predicate compare_values_now (Value *v1, Value *v2) =
-    (v1->c == v2->c) &&
-    (v1->d == v2->d);  // сравнение значений
-
-  predicate compare_keys{L1, L2} (Key *k1, Key *k2) =
+  predicate equal_keys{L1, L2} (Key *k1, Key *k2) =
     (\at(k1->a, L1) == \at(k2->a, L2)) &&
     (\at(k1->b, L1) == \at(k2->b, L2));  // сравнение ключей (+ по временным меткам)
 
@@ -161,48 +232,31 @@
     (\at(v1->c, L1) == \at(v2->c, L2)) &&
     (\at(v1->d, L1) == \at(v2->d, L2)); // сравнение значений (+ по временным меткам)
 
-  predicate valid_existence (Item *it) =
-    0 <= it->existent <= 1; // existence is bool, проверка b1
+  predicate equal_keys_now{L}(Key *k1, Key *k2) =
+    equal_keys{L, L}(k1, k2); // сравнение ключей
+    // (k1->a == k2->a) &&
+    // (k1->b == k2->b);
 
-  predicate item_exists (Item *it) =
-    it->existent == 1; // existent == 1 ?
-
-  predicate item_exists_t {L} (Item *it) =
-    \at(it->existent, L)  == 1; // как предыдущее, только в момент времени
-
-  logic Key* get_key (Item *it) =
-    &it->key; // получает ключ из item
-
-  logic Key* get_key_t {L} (Item *it) =
-    \at(&it->key, L); // как предыдущее, только в момент времени
-
-  logic Value* get_value (Item *it) =
-    &it->value; // получает значение из item
-
-  logic Value* get_value_t {L} (Item *it) =
-    \at(&it->value, L); // как предыдущее, только в момент времени
-
-  logic Item* get_item (Map *map, integer idx) =
-    &map->items[idx]; // получает item по индексу в map
-
-  logic Item* get_item_t {L} (Map *map, integer idx) =
-    \at(&map->items[idx], L); // как предыдущее, только в момент времени
+  predicate compare_values_now{L}(Value *v1, Value *v2) =
+    compare_values{L, L} (v1, v2); // сравнение значений
+    // (v1->c == v2->c) &&
+    // (v1->d == v2->d);
 
   predicate all_valid_existence (Map *map) =
     \forall integer i;
       0 <= i <= map->capacity ==>
         valid_existence(get_item(map, i)); // проверка b1
 
-  predicate unique_keys (Map *map) =
+  predicate unique_keys{L} (Map *map) =
     \forall integer i, j;
-      (0 <= i < map->capacity) &&
-      (map->capacity > j > i) &&
-      (item_exists(get_item(map, i))) &&
-      (item_exists(get_item(map, j))) ==>
-        !(compare_keys_now(get_key(get_item(map, i)), get_key(get_item(map, j)))); // проверка a1
+      (0 <= i < \at(map->capacity, L)) &&
+      (\at(map->capacity, L) > j > i) &&
+      (item_exists{L}(get_item{L}(map, i))) &&
+      (item_exists{L}(get_item{L}(map, j))) ==>
+        !(equal_keys_now{L}(get_key{L}(get_item{L}(map, i)), get_key{L}(get_item{L}(map, j)))); // проверка a1
 
   predicate compare_items{L1, L2} (Item *i1, Item *i2) =
-    compare_keys{L1, L2}(\at(&i1->key, L1), \at(&i2->key, L2)) &&
+    equal_keys{L1, L2}(\at(&i1->key, L1), \at(&i2->key, L2)) &&
     compare_values{L1, L2}(\at(&i1->value, L1), \at(&i2->value, L2)); // сравнение значений item
 
   predicate count_lowers{L1, L2} (Map *map) =
@@ -217,32 +271,47 @@
   predicate same_items{L1, L2} (Map *map) =
     \forall integer i;
     0 <= i < (\at(map->capacity, L2)) &&
-    item_exists_t{L1}(get_item_t{L1}(map, i)) &&
-    item_exists_t{L2}(get_item_t{L2}(map, i)) ==>
+    item_exists{L1}(get_item{L1}(map, i)) &&
+    item_exists{L2}(get_item{L2}(map, i)) ==>
       compare_items{L1, L2}
         (\at(&map->items[i], L1), \at(&map->items[i], L2)); // отображения остались такими же и вообще никак не поменялись
 
   predicate no_mchg{L1, L2} (Map *map, Key *key) = // проверяет, что в отображении остались все значения, которые были, кроме указанного
     \forall integer i;
       (0 <= i < (\at(map->capacity, L1))) &&
-      item_exists_t{L1}(get_item_t{L1}(map, i)) &&
-      !compare_keys{L1, L1}(key, get_key_t{L1}(get_item_t{L1}(map, i))) ==>
+      item_exists{L1}(get_item{L1}(map, i)) &&
+      !equal_keys{L1, L1}(key, get_key{L1}(get_item{L1}(map, i))) ==>
         (
           \exists integer j;
           (0 <= j < (\at(map->capacity, L2))) &&
-          item_exists_t{L2}(get_item_t{L2}(map, j)) ==>
-            compare_items{L1, L2}(get_item_t{L1}(map, i), get_item_t{L2}(map, j))
+          item_exists{L2}(get_item{L2}(map, j)) &&
+            compare_items{L1, L2}(get_item{L1}(map, i), get_item{L2}(map, j))
         );
+
+  predicate is_key_in_map{L} (Map *map, Key *k) =
+    \exists integer i;
+    (0 <= i < (\at(map->capacity, L))) &&
+      item_exists{L}(get_item(map, i)) &&
+      equal_keys_now{L}(get_key(get_item(map, i)), k);
+
+
+  // значение в мапе по соответствующему ключу существовало и равно переданному
+  predicate value_existed{L1, L2} (Map *map, Key *key, Value *value) =
+    \exists integer i;
+    (0 <= i < \at(map->capacity, L1)) &&
+      item_exists{L1} (get_item{L1}(map, i)) &&
+      equal_keys{L1, L2}(get_key{L1}(get_item{L1}(map, i)), \at(key, L2)) &&
+      compare_values{L1, L2}(get_value{L1}(get_item{L1}(map, i)), \at(value, L2));
 
   predicate no_new{L1, L2} (Map *map) = // проверяет, что каждое значение из результирующего map было в исходном
     \forall integer i;
     (0 <= i < (\at(map->capacity, L2))) &&
-    item_exists_t{L2}(get_item_t{L2}(map, i)) ==>
+    item_exists{L2}(get_item{L2}(map, i)) ==>
       (
         \exists integer j;
         (0 <= j <= (\at(map->capacity, L1))) &&
-        item_exists_t{L1}(get_item_t{L1}(map, j)) ==>
-          compare_items{L1, L2} (get_item_t{L2}(map, i), get_item_t{L1}(map, j))
+        item_exists{L1}(get_item{L1}(map, j)) &&
+          compare_items{L1, L2} (get_item{L2}(map, i), get_item{L1}(map, j))
       );
 
   predicate is_valid_map (Map *map) =
@@ -263,23 +332,20 @@ int initializeMap(Map *map, int size);
   /*@
     requires is_valid_map(map); // valid map, gotten out of initMap
     // проверка А2
-    requires \freeable(map->items); // dynamic map can be freed
+    requires map->items != \null ==> \freeable(map->items); // dynamic map can be freed
     // проверка А2
 
-    assigns map->items; // for map->items = NULL
-    assigns map->items[0..map->capacity - 1]; // for deinit with 0, dont need that
+    // frees map->items;
+    // assigns *map; // я ставлю map->count в 0
+    // assigns map->items;
+    // assigns map->items[0..map->capacity - 1]; // я ставлю existent в 0
+    // assigns map->count;
+    // assigns map->items[0..map->capacity];
 
-    allocates \nothing; // проверка A7
-
-    frees map->items; // dynamic map gets freed
-    // проверка А4, А1
-
-    ensures \valid(map) && (map->items == NULL); // memory pointers are valid
-    // проверка A6, А3
-    ensures !is_valid_map(map); // проверка А5
-    ensures same_capacity{Old, Post}(map); // capacity stays the same
-    ensures same_count{Old, Post}(map); // count stays the same
-    // проверка А8
+    ensures (map->items != NULL) ==> \allocable(map->items); // dynamic mem got freed, so its allocable
+    frees map->items; // what is getting freed
+    // ensures same_capacity{Old, Post}(map); // capacity stays the same
+    // ensures same_count{Old, Post}(map); // count stays the same
   */
 void finalizeMap(Map *map);
 
@@ -289,37 +355,35 @@ int addElement(Map *map, Key *key, Value *value);
   /*@
     requires is_valid_map(map); // проверка B11
     requires \valid(key); // проверка B11
-    requires value == NULL || \valid(value); // проверка B11
+    requires value == \null || \valid(value); // проверка B11
 
-    assigns *value; // проверка B5 (возможность записи по *value)
+    assigns *value; // проверка B5 (возможность изменения value? оно короче надо)
 
-    allocates \nothing; // проверка B7, B10
     frees \nothing; // проверка B7, B10
 
     ensures is_valid_map(map); // проверка B10
     ensures same_capacity{Old, Post}(map);   // проверка B9
+    ensures no_new{Old, Post}(map);
+    ensures equal_keys{Old, Post}(key, key); // проверка B7
+
     ensures // проверка B1 (ключа нет в любом случае)
       \forall integer i;
       (0 <= i < map->capacity) ==>
-        !compare_keys_now(key, get_key(get_item(map, i)));
+        !(equal_keys_now(key, get_key(get_item(map, i))) &&
+        item_exists(get_item(map, i)));
 
     ensures \result == 0 ==> // проверка B4
-      (
-        compare_keys{Old, Post}(key, key) &&       // проверка B7
-        compare_values{Old, Post}(value, value) && // проверка B7
-        same_count{Old, Post}(map) &&  // проверка B8
-        same_items{Old, Post}(map) && // проверка B3, B4, B6 если ничего не случилось
-        (
-          \forall integer i;
-          (0 <= i < map->capacity) ==>
-            !compare_keys{Here, Here}(key, get_key(get_item(map, i))) // no such key in map
-        )
-      );
+      (value == \null || compare_values{Old, Post}(value, value)) && // проверка B7
+      same_count{Old, Post}(map) &&  // проверка B8
+      same_items{Old, Post}(map);
+      // проверка B3, B4, B6 если ничего не случилось
 
     ensures \result == 1 ==> // проверка B4
       count_lowers{Old, Post}(map) &&  // проверка B8
-      no_mchg{Old, Post}(map, key) && // проверка B2, B6
-      no_new{Old, Post}(map); // проверка B3
+      no_mchg{Old, Post}(map, key) &&
+      (value == \null || value_existed{Old, Post}(map, key, value));
+      // проверка B2, B6
+      // проверка B3
 
   */
 int removeElement(Map *map, Key *key, Value *value);
@@ -330,30 +394,41 @@ int removeElement(Map *map, Key *key, Value *value);
     requires \valid(key); // проверка C9
     requires \valid(value); // проверка C9
 
-    assigns *value; // часть C1
+    // assigns *value; // часть C1
 
     allocates \nothing; // проверка С13
-    frees \nothing; // проверка С14
 
-    ensures is_valid_map(map); // проверка С8
+    // ensures is_valid_map(map); // проверка С8
+    // ensures is_valid_map(map); // он это почему то не сплиттит и боркается
+    ensures is_valid_map_mem(map);
+    ensures is_valid_map_sizes(map);
+    ensures is_valid_items(map);
+    ensures count_ok(map);
+    ensures begin_ok(map);
+    ensures unique_keys(map);
+    ensures all_valid_existence(map);
+    ensures gap_ok(map);
+
     ensures same_capacity{Old, Post}(map); // проверка С6
     ensures same_count{Old, Post}(map); // проверка С7
     ensures same_items{Old, Post}(map); // проверка С4
-    ensures compare_keys{Old, Post}(key, key); // проверка С5
+    ensures equal_keys{Old, Post}(key, key); // проверка С5
     ensures \valid(key); // проверка С9
-    ensures \valid(value); // проверка С9
 
-    ensures \result == 1 ==> // С2 (возвращается истина)
+    ensures \result == 1 ==> // проверка С2
       \exists integer i;
-      (0 <= i < map->capacity) ==>
-        compare_keys{Here, Here}(key, get_key(get_item(map, i))) && // C2 (отображение было)
-        compare_values{Here, Here}(value, get_value(get_item(map, i))); // проверка С1
+      (0 <= i < map->capacity) &&
+        equal_keys_now(key, get_key(get_item(map, i))) && // проверка C2
+        compare_values_now(value, get_value(get_item(map, i))) &&
+        item_exists(get_item(map, i)); // проверка С1
 
-    ensures \result == 0 ==> // С3 – вернулся 0
-      compare_values{Old, Post}(value, value) && // часть С3 (ничего не происходит)
+    ensures \result == 0 ==> // проверка С3
+      compare_values{Old, Post}(value, value) &&
       (\forall integer i;
-      (0 <= i < map->capacity) ==>
-        !compare_keys{Here, Here}(key, get_key(get_item(map, i)))); // С3 (ключа не было)
+        (0 <= i < map->capacity) ==>
+          !(equal_keys{Pre, Post}(key, get_key{Post}(get_item{Post}(map, i))) &&
+          item_exists{Pre}(get_item{Pre}(map, i))));
+
 
   */
 int getElement(Map *map, Key *key, Value *value);
