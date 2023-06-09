@@ -5,6 +5,74 @@
 //   Key: { int, int }
 //   value: { int, int }
 
+/*@
+  requires is_valid_map(map);
+  requires 0 <= map->capacity <= 0x7fffffff;
+
+  allocates \nothing;
+  assigns \nothing;
+
+  ensures is_valid_map(map);
+  ensures \result == count(map, 0, map->capacity);
+  ensures \result == count_exist(map);
+  ensures \result >= 1 ==> map->items[0].existent == 1;*/
+// */
+int _count_linker(Map *map){
+  int cnt = 0;
+  /*@
+    loop invariant 0 <= i;
+    loop invariant i <= map->capacity;
+    loop invariant 0 <= cnt <= map->capacity;
+    loop invariant cnt <= i;
+    loop invariant cnt == count(map, 0, i);
+    loop variant map->capacity - i;
+  */
+  for (int i = 0; i < map->capacity; i++){
+    /*@ assert \at(i, LoopCurrent) <= map->capacity;*/
+    map->items[i].existent == 1 ? cnt++ : cnt;
+  }
+  return cnt;
+}
+
+/*@
+  requires is_valid_map(map);
+  requires 0 <= map->capacity <= 0x7fffffff;
+  requires 0 <= m <= n < map->capacity;
+
+  allocates \nothing;
+  assigns \nothing;
+
+  ensures is_valid_map(map);
+  ensures \result == count(map, m, n);*/
+// */
+int _count_linker_2(Map *map, int m, int n){
+  int cnt;
+  /*@
+    loop invariant 0 <= i;
+    loop invariant i <= map->capacity;
+    loop invariant 0 <= cnt <= map->capacity;
+    loop invariant cnt <= i;
+    loop invariant cnt == count(map, 0, i);
+    loop variant m - i;
+  */
+  for (int i = 0; i < m; i++){
+    /*@ assert \at(i, LoopCurrent) <= map->capacity;*/
+    map->items[i].existent == 1 ? cnt++ : cnt;
+  }
+  /*@
+    loop invariant 0 <= i;
+    loop invariant i <= map->capacity;
+    loop invariant 0 <= cnt <= map->capacity;
+    loop invariant cnt <= i;
+    loop invariant cnt == count(map, m, i);
+    loop variant n - i;
+  */
+  for (int i = m; i <= n; i++){
+    /*@ assert \at(i, LoopCurrent) <= map->capacity;*/
+    map->items[i].existent == 1 ? cnt++ : cnt;
+  }
+  return cnt;
+}
 
   // makes map
 int initializeMap(Map *map, int size){
@@ -107,18 +175,19 @@ int removeElement(Map *map, Key *key, Value *value){
     loop invariant i >= 0;
     loop invariant 0 <= map->count <= map->capacity;
     loop invariant \valid(map->items + (0..map->capacity - 1));
+    loop invariant \at(map->count, Pre) == \at(map->count, Here);
     loop invariant \forall integer j; (0 <= j < i) ==>
       !(equal_keys_now{Here}(get_key{Here}(get_item{Here}(map, j)), key) &&
       item_exists{Here}(get_item{Here}(map, j)));
-    // loop invariant is_valid_map(map); // он это почему то не сплиттит и боркается
-    loop invariant is_valid_map_mem(map);
-    loop invariant is_valid_map_sizes(map);
-    loop invariant is_valid_items(map);
-    loop invariant count_ok(map);
-    loop invariant begin_ok(map);
-    loop invariant unique_keys(map);
-    loop invariant all_valid_existence(map);
-    loop invariant gap_ok(map);
+    loop invariant is_valid_map(map); // он это почему то не сплиттит и боркается
+    // loop invariant is_valid_map_mem(map);
+    // loop invariant is_valid_map_sizes(map);
+    // loop invariant is_valid_items(map);
+    // loop invariant count_ok(map);
+    // loop invariant begin_ok(map);
+    // loop invariant unique_keys(map);
+    // loop invariant all_valid_existence(map);
+    // loop invariant gap_ok(map);
 
     loop invariant compare_values{Pre, Here}(value, value);
     loop invariant equal_keys{Pre, Here}(key, key);
@@ -130,16 +199,43 @@ int removeElement(Map *map, Key *key, Value *value){
   for (int i = 0; i < map->capacity; i++){
     /*@ assert i <= map->capacity - 1;*/
     if (map->items[i].key.a == key->a && map->items[i].key.b == key->b && map->items[i].existent == 1){
-      /*@ assert (i >= 1) ==> (count(map, i - 1, i) == 1);*/
-      /*@ assert (i >= 1) ==> (count(map, i - 1, i) >= 1);*/
-      /*@ assert (i >= 1) ==> (count(map, 0, i - 1) == count(map, 0, i - 1) + count(map, i - 1, i));*/
-      /*@ assert count(map, 0, i) >= 1;*/
-      /*@ assert count(map, 0, map->capacity - 1) == count(map, 0, i) + count(map, i, map->capacity - 1);*/
+
+      /*@ assert count_ok(map);*/
+      /*@ assert (i + 1) <= map->capacity;*/
+      /*@ assert count(map, 0, i) + count(map, i, map->capacity) == count(map, 0, map->capacity);*/
+      /*@ assert count(map, i, i+1) + count(map, i+1, map->capacity) == count(map, i, map->capacity);*/
+      /*@ assert count(map, i, i+1) == 1;*/
+      /*@ assert i < map->capacity;*/
+
+      /*@ghost
+        int cnt = 0;
+        /@
+          loop invariant 0 <= j <= map->capacity;
+          loop invariant 0 <= cnt <= map->capacity;
+          loop invariant cnt <= j;
+          loop variant i - j;
+        @/
+        for (int j = 0; j <= i; j++) {
+          //@ assert cnt <= j;
+          //@ assert j <= i;
+          map->items[i].existent == 1 ? cnt++ : cnt;
+          //@ assert cnt == count(map, 0, j + 1);
+        }
+        //@ assert cnt >= 0;
+        //@ assert cnt <= i;
+        //@ assert cnt == count(map, 0, i);
+        //@ assert count(map, 0, i) >= 0;
+      */
+
+      /*@ assert count(map, i, map->capacity) >= 0;*/
+      /*@ assert count(map, i+1, map->capacity) >= 0;*/
+      /*@ assert count(map, 0, i) >= 0;*/
+      /*@ assert count(map, i, map->capacity) >= 1;*/
       /*@ assert count(map, 0, map->capacity) >= 1;*/
-      /*@ assert map->count == count(map, 0, map->capacity);*/
-      /*@ assert map->count >= 1;*/
+
+      /*@ assert \at(map->count, Here) >= 1;*/
       map->count -= 1;
-      /*@ assert 0 <= \at(map->count, Here) <= \at(map->capacity, Here);*/
+      /*@ assert 0 <= \at(map->count, Here) < \at(map->capacity, Pre);*/
 
       // write removed value if not NULL
       if (value != ((void *)0)) {

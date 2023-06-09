@@ -92,48 +92,44 @@
 
   logic integer count{L}(Map *map, integer m, integer n);
 
-  logic integer count_exist{L}(Map *map) = count{L}(map, 0, map->capacity);
+  logic integer count_exist(Map *map) = count(map, 0, map->capacity); // посчитать все existent в Map
 
   axiom count_zero:
     \forall Map *map, integer m, n;
       m >= n ==>
         count(map, m, n) == 0;
 
-  predicate count_one_p{L}(Map *map, integer m) =
-    count(map, m, m + 1) == (map->items[m].existent ? 1 : 0);
+  // count(m, n) == if m == n + 1 ==> ...
+  predicate count_one_p{L}(Map *map, integer m, integer n) =
+    (n == m + 1) ==>
+      count(map, m, n) == (map->items[m].existent ? 1 : 0);
 
   axiom count_one{L}:
     \forall Map *map, integer m;
-      count_one_p(map, m);
+      count_one_p(map, m, m + 1);
 
-  predicate count_neg_p{L}(Map *map, integer m) =
-    count(map, m - 1, m) == (map->items[m - 1].existent ? 1 : 0);
+  predicate count_neg_p{L}(Map *map, integer m, integer n) =
+    (m == n - 1) ==>
+      count(map, m, n) == (map->items[m].existent ? 1 : 0);
 
   axiom count_neg{L}:
     \forall Map *map, integer m;
-      1 <= m <= map->capacity ==>
-      count_neg_p(map, m);
-
-  predicate count_self_p{L}(Map *map, integer m) =
-    count(map, m, m) == (map->items[m].existent ? 1 : 0);
-
-  axiom count_self{L}:
-    \forall Map *map, integer m;
-      0 <= m < map->capacity ==>
-      count_self_p(map, m);
+      count_neg_p(map, m - 1, m);
 
   predicate count_split_p{L}(Map *map, integer m, integer n, integer k) =
-    count(map, m, k) == count(map, m, n) + count(map, n, k);
+    (m <= n <= k) ==>
+      count(map, m, k) == count(map, m, n) + count(map, n, k);
 
   axiom count_split{L}:
     \forall Map *map, integer m, n, k;
-      m <= n <= k ==>
+      (m <= n <= k) ==>
         count_split_p(map, m, n, k);
 
-  axiom count_amount{L}:
-    \forall Map *map;
-      count(map, 0, map->capacity) == map->count;
 }*/
+// functions instead of lemmas:
+// their full correctness gives us lemmas
+// потом вызвать эту функцию в гасте с нужными аргументами
+//
 
 /*@ axiomatic how_to_count2 {
 
@@ -153,7 +149,7 @@
     \forall Map *map, integer i;
       is_valid_map(map) ==>
       (
-        (count_one_p(map, i)) &&
+        (count_one_p(map, i, i + 1)) &&
           (count(map, i, (i + 1)) ==
             (
               map->items[i].existent ? 1 : 0
@@ -161,6 +157,33 @@
           )
       );
 }*/
+
+/*@ghost
+  /@
+    lemma
+    requires is_valid_map(map);
+    requires \valid(map->items + (0..map->capacity - 1));
+    requires 0 <= map->count <= map->capacity;
+    requires 0 <= i <= j <= map->capacity;
+    decreases j - i;
+
+    assigns \nothing;
+    frees \nothing;
+
+    ensures 0 <= count(map, i, j) <= j - i;
+  @/
+  void _count_greater(Map *map, int i, int j){
+    if (i < j) {
+      _count_greater(map, i + 1, j);
+      //@ assert count(map, i, i + 1) >= 0;
+      //@ assert count(map, i, i + 1) <= 1;
+      //@ assert i <= i + 1 <= j;
+      //@ assert count(map, i, i + 1) + count(map, i + 1, j) == count(map, i, j);
+    } else {
+      //@ assert i == j;
+    }
+  }
+*/
 
 
 /*@
@@ -342,8 +365,8 @@ int initializeMap(Map *map, int size);
     // assigns map->count;
     // assigns map->items[0..map->capacity];
 
-    ensures (map->items != NULL) ==> \allocable(map->items); // dynamic mem got freed, so its allocable
-    frees map->items; // what is getting freed
+    ensures (map->items != NULL) ==> \allocable(map->items);
+    // frees map->items; // what is getting freed
     // ensures same_capacity{Old, Post}(map); // capacity stays the same
     // ensures same_count{Old, Post}(map); // count stays the same
   */
@@ -357,7 +380,11 @@ int addElement(Map *map, Key *key, Value *value);
     requires \valid(key); // проверка B11
     requires value == \null || \valid(value); // проверка B11
 
-    assigns *value; // проверка B5 (возможность изменения value? оно короче надо)
+    // assigns *value; // проверка B5 (возможность изменения value? оно короче надо)
+    assigns *value;
+    assigns *map;
+    assigns map->items[0..map->capacity - 1];
+    // заменить на конкретные поля?
 
     frees \nothing; // проверка B7, B10
 
@@ -371,6 +398,8 @@ int addElement(Map *map, Key *key, Value *value);
       (0 <= i < map->capacity) ==>
         !(equal_keys_now(key, get_key(get_item(map, i))) &&
         item_exists(get_item(map, i)));
+
+    ensures 0 <= \result <= 1;
 
     ensures \result == 0 ==> // проверка B4
       (value == \null || compare_values{Old, Post}(value, value)) && // проверка B7
@@ -394,7 +423,7 @@ int removeElement(Map *map, Key *key, Value *value);
     requires \valid(key); // проверка C9
     requires \valid(value); // проверка C9
 
-    // assigns *value; // часть C1
+    assigns *value; // часть C1
 
     allocates \nothing; // проверка С13
 
@@ -414,6 +443,8 @@ int removeElement(Map *map, Key *key, Value *value);
     ensures same_items{Old, Post}(map); // проверка С4
     ensures equal_keys{Old, Post}(key, key); // проверка С5
     ensures \valid(key); // проверка С9
+
+    ensures 0 <= \result <= 1;
 
     ensures \result == 1 ==> // проверка С2
       \exists integer i;
